@@ -1,6 +1,7 @@
 import userSchema from "../models/user-schema.js";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import { mailSend } from "../../email-verify/verification.js";
 
 export const register = async (req, res) => {
   try {
@@ -19,6 +20,7 @@ export const register = async (req, res) => {
         "secretkeyappearshere",
         { expiresIn: "1h" }
       );
+      mailSend(token)
       const user = await userSchema.create({ userName, email, password, token })
       const salt = await bcrypt.genSalt(10)
       const hashedPassword = await bcrypt.hash(user.password, salt)
@@ -39,4 +41,20 @@ export const register = async (req, res) => {
       message: "Could not Access",
     })
   }
+}
+
+export const verification = async (req, res) => {
+  const {token} = req.params;
+    jwt.verify (token, 'secretkeyappearshere', function(err, decoded) {
+        if (err) {
+            console.log(err);
+            res.send("Email verification failed,possibly the link is invalid or expired");
+        }
+        else {
+            res.send("Email verified successfully");
+            const { userName, email, password  } = req.body
+            userSchema.findOneAndUpdate({ token: token },{ $set: {token:"null"}},{ new: true, upsert: true })
+           
+        }
+    });
 }
