@@ -1,10 +1,10 @@
 import express from 'express'
-import { connectDB } from './config/db-connection.js';
+import { connectDB } from './src/config/db-connection.js';
 import route from './src/routes/user-route.js'
+import dotenv from "dotenv/config";
 
 const app = express();
-const PORT = 8000;
-
+const PORT = process.env.PORT 
 app.listen(PORT, () => {
   console.log(`Running on PORT ${PORT}`);
 })

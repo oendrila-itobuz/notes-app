@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
+import dotenv from "dotenv/config";
 
-const url = "mongodb+srv://oendrila:1234@cluster0.ip9cg.mongodb.net/";
+const url = process.env.connectionString;
 
 export async function connectDB () {
   await mongoose.connect(url)
