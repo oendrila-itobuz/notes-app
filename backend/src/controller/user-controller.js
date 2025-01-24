@@ -23,7 +23,7 @@ export const register = async (req, res) => {
         { expiresIn: "1h" }
       );
       
-      mailSend(token)
+      mailSend(token,email)
       const user = await userSchema.create({ userName, email, password, token })
       const salt = await bcrypt.genSalt(10)
       const hashedPassword = await bcrypt.hash(user.password, salt)
