@@ -25,26 +25,3 @@ export const mailSend = async (token,email) => {
     console.log(info);
   });
 }
-
-
-
-
-
-
-
-
-// export const verification = async (req, res) => {
-//   const {token} = req.params;
-//   const {verified} = req.body;
-//    jwt.verify(token, 'ourSecretKey', function(err, decoded) {
-//     if (err) {
-//         console.log(err);
-//         res.send("Email verification failed,possibly the link is invalid or expired");
-//     }
-//     else {
-//         res.send("Email verifified successfully");
-//         token=true;
-//     }
-// });
-
-// }
