@@ -4,7 +4,7 @@ export const userSchema = yup.object({
 
     userName: yup.string().trim()
         .min(5, 'username must be at least 8 characters')
-        .max(20,'userName must be at most 20 characters'),
+        .max(20, 'userName must be at most 20 characters'),
     email: yup.string()
         .email('The email is not a valid one').required(),
     password: yup.string()
@@ -12,7 +12,7 @@ export const userSchema = yup.object({
         .matches(/[A-Z]/, 'Must include at least one uppercase letter')
         .matches(/[a-z]/, 'Must include at least one lowercase letter')
         .matches(/\d/, 'Must include at least one number')
-        .matches(/\W/,'Must include at least one special character')
+        .matches(/\W/, 'Must include at least one special character')
 });
 
 export const validateUser = (schema) => async (req, res, next) => {

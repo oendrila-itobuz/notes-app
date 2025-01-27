@@ -22,8 +22,8 @@ export const register = async (req, res) => {
         process.env.secretKey,
         { expiresIn: "1h" }
       );
-      
-      mailSend(token,email)
+
+      mailSend(token, email)
       const user = await userSchema.create({ userName, email, password, token })
       const salt = await bcrypt.genSalt(10)
       const hashedPassword = await bcrypt.hash(user.password, salt)
@@ -60,6 +60,13 @@ export const login = async (req, res) => {
         return res.status(401).json({ error: 'Incorrect password' });
       }
       else if (passwordMatch && user.verified === true) {
+        const accessToken = jwt.sign(
+          {
+          },
+          process.env.secretKey,
+          { expiresIn: "1h" }
+        );
+        await userSchema.findOneAndUpdate({ email: email }, { $set: { accessToken: accessToken, loggedIn: "true" } }, { new: true, upsert: true })
         res.status(200).json({
           message: "User logged In"
         })
