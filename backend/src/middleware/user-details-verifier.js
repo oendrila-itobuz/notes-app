@@ -15,7 +15,6 @@ export const userSchema = yup.object({
         .matches(/\W/,'Must include at least one special character')
 });
 
-
 export const validateUser = (schema) => async (req, res, next) => {
     try {
         await schema.validate(req.body);
