@@ -18,7 +18,7 @@ export const addNote = async (req, res) => {
     console.error(error);
     res.status(500).json({
       success: false,
-      message: "Could not access",
+      message: "Could not acckess",
     });
   }
 }
