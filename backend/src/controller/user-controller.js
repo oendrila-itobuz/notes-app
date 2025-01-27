@@ -4,49 +4,44 @@ import jwt from 'jsonwebtoken'
 import { mailSend } from "./../email-verify/verification.js";
 import dotenv from "dotenv/config";
 
-//registration
+// user registration
+
 export const register = async (req, res) => {
   try {
-    const { userName, email, password } = req.body
-    const duplicate = await userSchema.findOne({ email: email })
+    const { userName, email, password } = req.body;
+    const duplicate = await userSchema.findOne({ email: email });
     if (duplicate) {
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
-        message: "User Already Exists"
-      })
+        message: "User Already Exists",
+      });
     }
-    else {
-      const token = jwt.sign(
-        {
-        },
-        process.env.secretKey,
-        { expiresIn: "1h" }
-      );
-
-      mailSend(token, email)
-      const user = await userSchema.create({ userName, email, password, token })
-      const salt = await bcrypt.genSalt(10)
-      const hashedPassword = await bcrypt.hash(user.password, salt)
-      user.password = hashedPassword;
-      await user.save()
-      if (user) {
-        res.status(200).json({
-          success: true,
-          message: "User Registered Successfully",
-          data: user
-        })
-      }
-    }
-  }
-  catch (error) {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    const user = await userSchema.create({userName, email, password: hashedPassword});
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.secretKey,
+      { expiresIn: "1h" }
+    );
+    mailSend(token, email);
+    user.token = token;
+    await user.save();
+    return res.status(200).json({
+      success: true,
+      message: "User Registered Successfully",
+      data: { id: user._id, userName: user.userName, email: user.email },
+    });
+  } catch (error) {
     res.status(500).json({
       success: false,
       message: "Could not Access",
-    })
+    });
   }
-}
+};
 
 //login 
+
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body
