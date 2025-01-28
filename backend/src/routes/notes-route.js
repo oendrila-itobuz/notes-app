@@ -1,14 +1,14 @@
 import express from 'express';
 import { addNote, deleteNote, getNote, searchNote, updateNote } from '../controller/notes-controller.js';
-import { isLogged } from '../middleware/isLogged.js'
 import { hasToken } from '../middleware/hasToken.js';
+import { validateNote, noteSchema } from '../middleware/note-details-verifier.js';
 
-const routeN = express.Router();
+const routeNote = express.Router();
 
-routeN.post('/addNote/:userId', isLogged, hasToken, addNote);
-routeN.get('/getNotes/:userId', isLogged, hasToken, getNote)
-routeN.get('/searchNote/:userId/:id', isLogged, hasToken, searchNote)
-routeN.put('/update/:userId/:id', isLogged, hasToken, updateNote)
-routeN.delete('/delete/:userId/:id', isLogged, hasToken, deleteNote)
+routeNote.post('/addNote',hasToken,validateNote(noteSchema), addNote);
+routeNote.get('/getNotes',hasToken, getNote)
+routeNote.get('/searchNote/:id',hasToken,searchNote)
+routeNote.put('/update/:id',hasToken, validateNote(noteSchema), updateNote)
+routeNote.delete('/delete/:id',hasToken, deleteNote)
 
-export default routeN
+export default routeNote

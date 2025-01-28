@@ -3,22 +3,28 @@ import noteSchema from "../models/notes-schema.js";
 // add note
 export const addNote = async (req, res) => {
   try {
-    const userId = req.params.userId
     const { title, description } = req.body;
-    const response = await noteSchema.create({ title, description, userId });
-
-    if (response) {
+    const existing = await noteSchema.findOne({title:title,userId:req.userId})
+    if(existing)
+    {
+      return res.status(400).json({
+        success: false,
+        message: "This title Already Exists",
+      });
+    }
+    const data = await noteSchema.create({ title, description,userId:req.userId});
+    if (data) {
       res.status(200).json({
         success: true,
-        data: response,
         message: "Note Created Success",
+        data:[data.userId,data.title,data.description]
       });
     }
   } catch (error) {
     console.error(error);
     res.status(500).json({
       success: false,
-      message: "Could not acckess",
+      message: "Could not access",
     });
   }
 }
@@ -26,13 +32,14 @@ export const addNote = async (req, res) => {
 // all notes of an user
 export const getNote = async (req, res) => {
   try {
-    const id = req.params.userId
-    const data = await noteSchema.find({ userId: id })
+    const data = await noteSchema.find({ userId: req.userId })
+    console.log(data)
     if (data) {
+      // const fewfields=
       res.status(200).json({
         success: true,
         message: "Fetched Successfully",
-        data: data
+        data: data.map((data)=>[data._id, data.title , data.description])
       })
     }
   }
@@ -47,14 +54,13 @@ export const getNote = async (req, res) => {
 // get a particular note of an user
 export const searchNote = async (req, res) => {
   try {
-    const userId = req.params.userId
     const noteId = req.params.id
-    const data = await noteSchema.find({ userId: userId, _id: noteId })
+    const data = await noteSchema.findOne({ userId: req.userId, _id: noteId })
     if (data) {
       res.status(200).json({
         success: true,
         message: "Fetched Successfully",
-        data: data
+        data: [data.userId,data.title,data.description]
       })
     }
     else {
@@ -77,11 +83,8 @@ export const searchNote = async (req, res) => {
 export const updateNote = async (req, res) => {
   try {
     const { title, description } = req.body
-    const userId = req.params.userId
     const noteId = req.params.id
-    console.log(noteId)
-    const data = await noteSchema.findByIdAndUpdate({ userId: userId, _id: noteId })
-    console.log(data)
+    const data = await noteSchema.findByIdAndUpdate({ userId: req.userId, _id: noteId })
     if (data) {
       data.title = title;
       data.description = description;
@@ -89,7 +92,13 @@ export const updateNote = async (req, res) => {
       res.status(200).json({
         success: true,
         message: "Updated Successfully",
-        data: data
+        data: [data.userId,data.title,data.description]
+      })
+    }
+    else{
+      res.status(200).json({
+        success: false,
+        message: "No such note exists",
       })
     }
   }
@@ -106,9 +115,8 @@ export const updateNote = async (req, res) => {
 
 export const deleteNote = async (req, res) => {
   try {
-    const userId = req.params.userId
     const noteId = req.params.id
-    const data = await noteSchema.findByIdAndDelete({ userId: userId, _id: noteId })
+    const data = await noteSchema.findByIdAndDelete({ userId: req.userId, _id: noteId })
     if (data) {
       res.status(200).json({
         success: true,

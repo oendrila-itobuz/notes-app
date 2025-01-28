@@ -30,7 +30,7 @@ export const register = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "User Registered Successfully",
-      data: { id: user._id, userName: user.userName, email: user.email },
+      data: { id: user._id },
     });
   } catch (error) {
     res.status(500).json({
@@ -57,6 +57,7 @@ export const login = async (req, res) => {
       else if (passwordMatch && user.verified === true) {
         const accessToken = jwt.sign(
           {
+            id: user._id 
           },
           process.env.secretKey,
           { expiresIn: "1h" }
