@@ -9,8 +9,8 @@ import dotenv from "dotenv/config";
 export const register = async (req, res) => {
   try {
     const { userName, email, password } = req.body;
-    const duplicate = await userSchema.findOne({ email: email });
-    if (duplicate) {
+    const existing = await userSchema.findOne({ email: email });
+    if (existing) {
       return res.status(400).json({
         success: false,
         message: "User Already Exists",
@@ -18,11 +18,11 @@ export const register = async (req, res) => {
     }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    const user = await userSchema.create({userName, email, password: hashedPassword});
+    const user = await userSchema.create({ userName, email, password: hashedPassword });
     const token = jwt.sign(
       { id: user._id },
       process.env.secretKey,
-      { expiresIn: "1h" }
+      { expiresIn: "1min" }
     );
     mailSend(token, email);
     user.token = token;
@@ -57,12 +57,12 @@ export const login = async (req, res) => {
       else if (passwordMatch && user.verified === true) {
         const accessToken = jwt.sign(
           {
-            id: user._id 
+            id: user._id
           },
           process.env.secretKey,
           { expiresIn: "1h" }
         );
-        await userSchema.findOneAndUpdate({ email: email }, { $set: { accessToken: accessToken, loggedIn: "true" } }, { new: true, upsert: true })
+        await userSchema.findOneAndUpdate({ email: email }, { $set: { accessToken: accessToken, loggedIn: "true" } })
         res.status(200).json({
           message: "User logged In"
         })
