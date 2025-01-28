@@ -23,10 +23,5 @@
     "nodemon": "^3.1.9",
     "yup": "^1.6.1"
   },
-  "description": "",
-  "devDependencies": {
-    "@eslint/js": "^9.19.0",
-    "eslint": "^9.19.0",
-    "globals": "^15.14.0"
-  }
+  "description": ""
 }

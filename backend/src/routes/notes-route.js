@@ -4,7 +4,6 @@ import { hasToken } from '../middleware/hasToken.js';
 import { validateNote, noteSchema } from '../middleware/note-details-verifier.js';
 
 const routeNote = express.Router();
-const abc=10
 routeNote.post('/addNote', hasToken, validateNote(noteSchema), addNote);
 routeNote.get('/getNotes', hasToken, getNote)
 routeNote.get('/searchNote/:id', hasToken, searchNote)

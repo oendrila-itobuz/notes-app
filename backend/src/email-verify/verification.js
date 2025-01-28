@@ -1,15 +1,17 @@
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import handlebars from 'handlebars';
 import nodemailer from 'nodemailer'
-// import handlebars from 'handlebars'
-import dotenv from "dotenv/config";
-// import fs from "fs"
+import  dotenv from 'dotenv/config';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename); 
 
 export const mailSend = async (token, email) => {
-
-// const emailTemplateSource = fs.readFileSync('template.hbs')
-// const template = handlebars.compile(emailTemplateSource)
-// const htmlToSend = template({message: token})
-  
-  
+  const emailTemplateSource = fs.readFileSync(path.join(__dirname, 'template.hbs'), 'utf-8');
+  const template = handlebars.compile(emailTemplateSource);
+  const htmlToSend = template({ token });
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -17,22 +19,20 @@ export const mailSend = async (token, email) => {
       pass: process.env.mailPass
     }
   });
-  
+
   const mailConfigurations = {
     from: process.env.mailUser,
     to: email,
     subject: 'Email Verification',
-    text: `You have recently visited our Notes App website and entered your email.
-    Please follow the given link to verify your email.
-    http://localhost:8000/user/verify/${token}
-    Thanks`
-
-    // text: htmlToSend
+    html: htmlToSend, 
   };
 
   transporter.sendMail(mailConfigurations, function (error, info) {
-    if (error) throw Error(error);
+    if (error) {
+      console.error('Error sending email:', error);
+      throw new Error(error);
+    }
     console.log('Email Sent Successfully');
     console.log(info);
   });
-}
+};

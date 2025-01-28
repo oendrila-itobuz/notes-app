@@ -1,5 +1,0 @@
-// {
-//   "watch":["src"],
-//   "exe":"js",
-//   "exec":"npm run lint && node src/index.js "
-// }
