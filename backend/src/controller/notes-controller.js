@@ -84,6 +84,7 @@ export const updateNote = async (req, res) => {
     if (data) {
       data.title = title;
       data.description = description;
+      data.updatedAt=Date.now()
       await data.save();
       res.status(200).json({
         success: true,
@@ -190,5 +191,22 @@ export const pagination = async (req, res) => {
       message: "Could not access",
     });
 
+  }
+}
+
+//notes sorting based on latest creation
+
+export const sorting = async (req, res) => {
+  try{
+  const sortedDocuments = await noteSchema.find({ userId: req.userId }).sort({updateNoteAt:-1});
+  return res.status(200).json({
+    success: true,
+    message: sortedDocuments,
+  })
+  }
+  catch(error){
+    res.status(500).json({ 
+      message:error
+    })
   }
 }

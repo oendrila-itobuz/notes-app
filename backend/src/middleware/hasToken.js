@@ -15,16 +15,16 @@ export const hasToken = async (req, res, next) => {
       const token = authHeader.split(' ')[1];
       jwt.verify(token, process.env.secretKey, async (err, decoded) => {
         if (err) {
-          if(err.name==="TokenExpiredError")
-          return res.status(400).json({
-            success: false,
-            message: "The access token has expired use the refresh token to regenerate it ",
-          });
+          if (err.name === "TokenExpiredError")
+            return res.status(400).json({
+              success: false,
+              message: "The access token has expired use the refresh token to regenerate it ",
+            });
           else
-          return res.status(400).json({
-            success: false,
-            message: "The access token is invalid",
-          });
+            return res.status(400).json({
+              success: false,
+              message: "The access token is invalid",
+            });
         }
         else {
           const { id } = decoded;
@@ -36,12 +36,11 @@ export const hasToken = async (req, res, next) => {
             });
           }
           const existing = await sessionSchema.findOne({ userId: id });
-          if(existing)
-          {
+          if (existing) {
             req.userId = id
             next()
           }
-          else  {
+          else {
             return res.status(200).json({
               success: true,
               message: "The user has logged out already",

@@ -16,7 +16,7 @@ export const verification = async (req, res) => {
     else {
       const token = authHeader.split(' ')[1];
       jwt.verify(token, process.env.secretKey, async (err, decoded) => {
-        if (err){
+        if (err) {
           return res.status(400).json({
             success: false,
             message: "Token verification failed, possibly expired or invalid",

@@ -1,5 +1,5 @@
 import express from 'express';
-import { addNote, deleteNote, getNote, searchNote, updateNote, filterNote, pagination } from '../controller/notes-controller.js';
+import { addNote, deleteNote, getNote, searchNote, updateNote, filterNote, pagination, sorting } from '../controller/notes-controller.js';
 import { hasToken } from '../middleware/hasToken.js';
 import { validateNote, noteSchema } from '../middleware/note-details-verifier.js';
 
@@ -11,4 +11,5 @@ routeNote.get('/filterNote', hasToken, filterNote)
 routeNote.put('/update/:id', hasToken, validateNote(noteSchema), updateNote)
 routeNote.delete('/delete/:id', hasToken, deleteNote)
 routeNote.get('/pagination', hasToken, pagination)
+routeNote.get('/sorting', hasToken, sorting)
 export default routeNote

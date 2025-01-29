@@ -11,4 +11,5 @@ route.get('/verify', verification);
 route.post('/login', login)
 route.post('/logout', hasToken, logout)
 route.post('/regenerateToken', regenerate)
+
 export default route;
