@@ -13,15 +13,14 @@ export const addNote = async (req, res) => {
     }
     const data = await noteSchema.create({ title, description, userId: req.userId });
     if (data) {
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: "Note Created Success",
-        data: [data.userId, data.title, data.description]
+        data: [data._id, data.title, data.description]
       });
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Could not access",
     });
@@ -33,8 +32,7 @@ export const getNote = async (req, res) => {
   try {
     const data = await noteSchema.find({ userId: req.userId })
     if (data) {
-      // const fewfields=
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: "Fetched Successfully",
         data: data.map((data) => [data._id, data.title, data.description])
@@ -49,7 +47,7 @@ export const getNote = async (req, res) => {
   }
 }
 
-// get a particular note of an user
+// get a particular note of an user by id
 export const searchNote = async (req, res) => {
   try {
     const noteId = req.params.id
@@ -58,7 +56,7 @@ export const searchNote = async (req, res) => {
       res.status(200).json({
         success: true,
         message: "Fetched Successfully",
-        data: [data.userId, data.title, data.description]
+        data: [data._id, data.title, data.description]
       })
     }
     else {
@@ -90,7 +88,7 @@ export const updateNote = async (req, res) => {
       res.status(200).json({
         success: true,
         message: "Updated Successfully",
-        data: [data.userId, data.title, data.description]
+        data: [data._id, data.title, data.description]
       })
     }
     else {
@@ -130,3 +128,69 @@ export const deleteNote = async (req, res) => {
     })
   }
 }
+
+// filter notes by title
+
+export const filterNote = async (req, res) => {
+  try {
+    const { title } = req.body
+    const data = await noteSchema.find({ userId: req.userId })
+    let flag = false;
+    const filteredNotes = [];
+    data.map((data) => {
+      if (data.title.startsWith(title)) {
+        flag = true
+        filteredNotes.push({ title: data.title, description: data.description, NoteId: data._id })
+      }
+    })
+    console.log(filteredNotes)
+    if (flag === true) {
+      return res.status(200).json({
+        success: false,
+        data: filteredNotes
+      })
+    }
+    else {
+      return res.status(200).json({
+        success: false,
+        message: "No matched title found ",
+      })
+    }
+  }
+  catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Could not access",
+    });
+  }
+}
+
+//pagination of notes for an user 
+
+export const pagination = async (req, res) => {
+  try {
+    const { limit, page } = req.body
+    const offset = (page - 1) * limit;
+    const notes = await noteSchema.find()
+      .skip(offset)
+      .limit(limit);
+
+    res.status(200).json({
+      totalResults: notes.length,
+      output: notes.map(note => ({
+        NoteId: note._id,
+        title: note.title,
+        description: note.description
+      }))
+    })
+  }
+  catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Could not access",
+    });
+
+  }
+}
+
+

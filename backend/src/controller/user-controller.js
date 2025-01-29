@@ -1,8 +1,10 @@
 import userSchema from "../models/user-schema.js";
+import sessionSchema from "../models/session-schema.js"
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { mailSend } from "./../email-verify/verification.js";
 import dotenv from "dotenv/config";
+import { response } from "express";
 
 // user registration
 
@@ -22,7 +24,7 @@ export const register = async (req, res) => {
     const token = jwt.sign(
       { id: user._id },
       process.env.secretKey,
-      { expiresIn: "1min" }
+      { expiresIn: "1hr" }
     );
     mailSend(token, email);
     user.token = token;
@@ -55,16 +57,33 @@ export const login = async (req, res) => {
         return res.status(401).json({ error: 'Incorrect password' });
       }
       else if (passwordMatch && user.verified === true) {
+        const existing = await sessionSchema.findOne({ userId:user._id });
+        if(!existing)
+        await sessionSchema.create({ userId:user._id })
+        else
+        {
+          return res.status(200).json({
+            message: "User's login session is active ",
+        })
+        }
         const accessToken = jwt.sign(
           {
             id: user._id
           },
           process.env.secretKey,
-          { expiresIn: "1h" }
+          { expiresIn: "1sec" }
         );
-        await userSchema.findOneAndUpdate({ email: email }, { $set: { accessToken: accessToken, loggedIn: "true" } })
-        res.status(200).json({
-          message: "User logged In"
+        const refreshToken = jwt.sign(
+          {
+            id: user._id
+          },
+          process.env.secretKey,
+          { expiresIn: "30days" }
+        );
+        return res.status(200).json({
+          message: "User logged In",
+          accessToken:accessToken,
+          refreshToken:refreshToken
         })
       }
       else {
@@ -80,4 +99,100 @@ export const login = async (req, res) => {
       message: "Could not Access",
     })
   }
+}
+
+//logout 
+
+export const logout = async (req, res) =>{
+  const existing = await sessionSchema.findOne({ userId:req.userId });
+  try{
+    if(existing)
+      {
+        await sessionSchema.findOneAndDelete({ userId:req.userId });
+        return res.status(200).json({
+          success:true,
+          message:"Session successfully ended"
+        })
+      }
+      else{
+        return res.status(200).json({
+          success:false,
+          message:"User had no session"
+        })
+      }
+  }
+  catch(error){
+    res.status(500).json({
+      success: false,
+      message: "Could not Access",
+    })
+  }  
+}
+
+//regenerate 
+export const regenerate = async (req,res) =>{
+try {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer')) {
+    return res.status(401).json({
+      success: false,
+      message: "Refresh token is missing or invalid",
+    });
+  }
+  else {
+    const token = authHeader.split(' ')[1];
+    jwt.verify(token, process.env.secretKey, async (err, decoded) => {
+      if (err) {
+        if(err.name==="TokenExpiredError")          
+        return res.status(400).json({
+          success: false,
+          message: "The access token has expired use the refresh token to regenerate it ",
+        });
+        else
+        return res.status(400).json({
+          success: false,
+          message: "The access token is invalid",
+        });
+      }
+      else {
+        const { id } = decoded;
+        const user = await userSchema.findById(id);
+        if (!user) {
+          return res.status(404).json({
+            success: false,
+            message: "User not found",
+          });
+        }
+        const existing = await sessionSchema.findOne({ userId: id });
+        if(existing)
+        {
+          const accessToken = jwt.sign(
+            {
+              id: user._id
+            },
+            process.env.secretKey,
+            { expiresIn: "1h" }
+          );
+          return res.status(200).json({
+            success: true,
+            message: "The access token ",
+            token:accessToken
+          });
+        }
+        else  {
+          return res.status(200).json({
+            success: true,
+            message: "The user has logged out",
+          });
+        }
+      }
+    });
+  }
+} catch (error) {
+  console.error(error);
+  return res.status(500).json({
+    success: false,
+    message: "Could not Access",
+  });
+}
 }

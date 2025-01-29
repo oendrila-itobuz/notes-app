@@ -1,4 +1,5 @@
 import userSchema from "../models/user-schema.js";
+import sessionSchema from "../models/session-schema.js"
 import jwt from 'jsonwebtoken'
 
 export const hasToken = async (req, res, next) => {
@@ -14,9 +15,15 @@ export const hasToken = async (req, res, next) => {
       const token = authHeader.split(' ')[1];
       jwt.verify(token, process.env.secretKey, async (err, decoded) => {
         if (err) {
+          if(err.name==="TokenExpiredError")
           return res.status(400).json({
             success: false,
-            message: "The access token might have expired",
+            message: "The access token has expired use the refresh token to regenerate it ",
+          });
+          else
+          return res.status(400).json({
+            success: false,
+            message: "The access token is invalid",
           });
         }
         else {
@@ -28,15 +35,17 @@ export const hasToken = async (req, res, next) => {
               message: "User not found",
             });
           }
-          else if (user.loggedIn === "false") {
-            return res.status(200).json({
-              success: true,
-              message: "The user has logged out",
-            });
-          }
-          else {
+          const existing = await sessionSchema.findOne({ userId: id });
+          if(existing)
+          {
             req.userId = id
             next()
+          }
+          else  {
+            return res.status(200).json({
+              success: true,
+              message: "The user has logged out already",
+            });
           }
         }
       });

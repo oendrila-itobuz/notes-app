@@ -21,14 +21,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null
   },
-  accessToken: {
-    type: String,
-    default: null
-  },
-  loggedIn: {
-    type: Boolean,
-    default: "false"
-  }
 })
 
 export default mongoose.model("user", userSchema)
