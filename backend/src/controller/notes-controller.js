@@ -198,7 +198,7 @@ export const pagination = async (req, res) => {
 
 export const sorting = async (req, res) => {
   try{
-  const sortedDocuments = await noteSchema.find({ userId: req.userId }).sort({updateNoteAt:-1});
+  const sortedDocuments = await noteSchema.find({ userId: req.userId }).sort({updatedAt:1,title:1});
   return res.status(200).json({
     success: true,
     message: sortedDocuments,
