@@ -3,10 +3,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import handlebars from 'handlebars';
 import nodemailer from 'nodemailer'
-import  dotenv from 'dotenv/config';
+import dotenv from 'dotenv/config';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename); 
+const __dirname = path.dirname(__filename);
 
 export const mailSend = async (token, email) => {
   const emailTemplateSource = fs.readFileSync(path.join(__dirname, 'template.hbs'), 'utf-8');
@@ -24,7 +24,7 @@ export const mailSend = async (token, email) => {
     from: process.env.mailUser,
     to: email,
     subject: 'Email Verification',
-    html: htmlToSend, 
+    html: htmlToSend,
   };
 
   transporter.sendMail(mailConfigurations, function (error, info) {

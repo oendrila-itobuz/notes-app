@@ -192,5 +192,3 @@ export const pagination = async (req, res) => {
 
   }
 }
-
-

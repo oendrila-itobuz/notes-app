@@ -8,8 +8,8 @@ const sessionSchema = new mongoose.Schema({
   },
   issuedAt: {
     type: Date,
-    default: Date.now 
-  }   
+    default: Date.now
+  }
 })
 
 export default mongoose.model("session", sessionSchema)
