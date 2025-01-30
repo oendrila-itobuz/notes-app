@@ -4,7 +4,6 @@ import route from './src/routes/user-route.js'
 import routeNote from './src/routes/notes-route.js'
 import dotenv from "dotenv/config";
 
-var a = 10
 const app = express();
 const PORT = process.env.PORT
 app.listen(PORT, () => {
