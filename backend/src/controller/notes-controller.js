@@ -84,7 +84,7 @@ export const updateNote = async (req, res) => {
     if (data) {
       data.title = title;
       data.description = description;
-      data.updatedAt=Date.now()
+      data.updatedAt.now()
       await data.save();
       res.status(200).json({
         success: true,
@@ -194,11 +194,11 @@ export const pagination = async (req, res) => {
   }
 }
 
-//notes sorting based on latest creation
+//notes sorting based on latest updation
 
 export const sorting = async (req, res) => {
   try{
-  const sortedDocuments = await noteSchema.find({ userId: req.userId }).sort({updatedAt:1,title:1});
+  const sortedDocuments = await noteSchema.find({ userId: req.userId }).sort({updatedAt:-1});
   return res.status(200).json({
     success: true,
     message: sortedDocuments,
