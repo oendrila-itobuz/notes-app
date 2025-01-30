@@ -1,3 +1,4 @@
+import multer from "multer"
 import noteSchema from "../models/notes-schema.js";
 
 // add note
@@ -11,12 +12,12 @@ export const addNote = async (req, res) => {
         message: "This title Already Exists",
       });
     }
-    const data = await noteSchema.create({ title, description, userId: req.userId });
+    const data = await noteSchema.create({ title:title, description:description , userId: req.userId });
     if (data) {
       return res.status(200).json({
         success: true,
         message: "Note Created Success",
-        data: [data._id, data.title, data.description]
+        data: [data._id, data.title, data.description ,]
       });
     }
   } catch (error) {
@@ -84,7 +85,7 @@ export const updateNote = async (req, res) => {
     if (data) {
       data.title = title;
       data.description = description;
-      data.updatedAt.now()
+      data.updatedAt=Date.now()
       await data.save();
       res.status(200).json({
         success: true,
@@ -198,7 +199,7 @@ export const pagination = async (req, res) => {
 
 export const sorting = async (req, res) => {
   try{
-  const sortedDocuments = await noteSchema.find({ userId: req.userId }).sort({updatedAt:-1});
+  const sortedDocuments = await noteSchema.find({ userId: req.userId }).sort({updatedAt:1 , title:1});
   return res.status(200).json({
     success: true,
     message: sortedDocuments,
@@ -209,4 +210,28 @@ export const sorting = async (req, res) => {
       message:error
     })
   }
+}
+
+//upload file
+export const attachFile = async(req, res) => {
+  try{
+  if (!req.file) {
+      return res.status(400).send('No file uploaded.');
+  }
+  const noteId = req.params.id
+  const data = await noteSchema.findOne({ userId: req.userId, _id: noteId })
+  data.file=req.file.filename
+  await data.save()
+  return res.status(200).json({
+    success: true,
+    message:"Folder Added Successfully",
+    data:data
+  })
+}
+catch(error)
+{
+  res.status(500).json({ 
+    message:error
+  })
+}
 }

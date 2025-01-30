@@ -2,7 +2,7 @@ import express from 'express';
 import { register, login, logout, regenerate } from '../controller/user-controller.js';
 import { verification } from '../middleware/registration-token-verifier.js';
 import { hasToken } from '../middleware/hasToken.js';
-import { validateUser, userSchema } from '../middleware/user-details-verifier.js';
+import { validateUser, userSchema } from '../validators/user-details-verifier.js';
 
 const route = express.Router();
 
