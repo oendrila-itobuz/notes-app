@@ -24,7 +24,7 @@ export const register = async (req, res) => {
     const token = jwt.sign(
       { id: user._id },
       process.env.secretKey,
-      { expiresIn: "1hr" }
+      { expiresIn: "2m" }
     );
     mailSend(token, email);
     user.token = token;
@@ -32,15 +32,54 @@ export const register = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "User Registered Successfully",
-      data: { id: user._id },
+      data: { userName: userName }
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
+      success: false,
+      message: "Could not Access"
+    });
+  }
+};
+
+//regenerate registration token (send the mail verification again)
+
+export const resendMail = async (req,res) =>
+{
+  try{
+  const {email} = req.body
+  const user = await userSchema.findOne({email:email})
+  console.log(user)
+  if(user){
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.secretKey,
+      { expiresIn: "1hr" }
+    );
+    user.token = token;
+    await user.save();
+    mailSend(token, email);
+    return res.status(200).json({
+      success: true,
+      message: `Mail sent successfully at ${email}`,
+    });
+  }
+  else{
+    return res.status(404).json({
+      success: false,
+      message: "No such user found"
+    })
+  }
+ }
+  catch(error){
+    return res.status(500).json({
       success: false,
       message: "Could not Access",
     });
   }
-};
+
+}
+
 
 //login 
 

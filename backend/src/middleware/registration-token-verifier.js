@@ -17,6 +17,12 @@ export const verification = async (req, res) => {
       const token = authHeader.split(' ')[1];
       jwt.verify(token, process.env.secretKey, async (err, decoded) => {
         if (err) {
+          if (err.name === "TokenExpiredError"){            
+            return res.status(400).json({
+              success: false,
+              message: "The registration token has expired use your email to regenerate it ",
+            });
+          }
           return res.status(400).json({
             success: false,
             message: "Token verification failed, possibly expired or invalid",

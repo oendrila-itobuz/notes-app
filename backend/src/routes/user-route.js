@@ -1,5 +1,5 @@
 import express from 'express';
-import { register, login, logout, regenerate } from '../controller/user-controller.js';
+import { register, login, logout, regenerate, resendMail } from '../controller/user-controller.js';
 import { verification } from '../middleware/registration-token-verifier.js';
 import { hasToken } from '../middleware/hasToken.js';
 import { validateUser, userSchema } from '../validators/user-details-verifier.js';
@@ -10,6 +10,7 @@ route.post('/register', validateUser(userSchema), register);
 route.get('/verify', verification);
 route.post('/login', login)
 route.post('/logout', hasToken, logout)
-route.post('/regenerateToken', regenerate)
+route.post('/regenerateToken', regenerate) //regeneration of access token
+route.post('/resendMail', resendMail) //resend mail for verification
 
 export default route;
