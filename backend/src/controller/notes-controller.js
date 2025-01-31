@@ -17,7 +17,7 @@ export const addNote = async (req, res) => {
       return res.status(200).json({
         success: true,
         message: "Note Created Success",
-        data: [data._id, data.title, data.description ,]
+        data: [{noteId:data._id, Title:data.title, description:data.description }]
       });
     }
   } catch (error) {
@@ -36,7 +36,7 @@ export const getNote = async (req, res) => {
       return res.status(200).json({
         success: true,
         message: "Fetched Successfully",
-        data: data.map((data) => [data._id, data.title, data.description])
+        data: data.map((data) => [{noteId:data._id, Title:data.title, description:data.description }])
       })
     }
   }
@@ -57,7 +57,7 @@ export const searchNote = async (req, res) => {
       res.status(200).json({
         success: true,
         message: "Fetched Successfully",
-        data: [data._id, data.title, data.description]
+        data: [{noteId:data._id, Title:data.title, description:data.description }]
       })
     }
     else {
@@ -83,15 +83,26 @@ export const updateNote = async (req, res) => {
     const noteId = req.params.id
     const data = await noteSchema.findByIdAndUpdate({ userId: req.userId, _id: noteId })
     if (data) {
-      data.title = title;
-      data.description = description;
-      data.updatedAt=Date.now()
-      await data.save();
-      res.status(200).json({
-        success: true,
-        message: "Updated Successfully",
-        data: [data._id, data.title, data.description]
-      })
+      const existing= await noteSchema.findOne({ title:title , userId: req.userId})
+      console.log(existing)
+      if(existing)
+      {
+        res.status(400).json({
+          success: false,
+          message: "The title already exists",
+        })
+      }
+      else{
+        data.title = title;
+        data.description = description;
+        data.updatedAt=Date.now()
+        await data.save();
+        res.status(200).json({
+          success: true,
+          message: "Updated Successfully",
+          data: [data._id, data.title, data.description]
+        })
+      }
     }
     else {
       res.status(200).json({
@@ -121,6 +132,11 @@ export const deleteNote = async (req, res) => {
         message: "Deleted Successfully",
       })
     }
+    else
+    res.status(400).json({
+      success: true,
+      message: "No such data found",
+    })
   }
   catch (error) {
     res.status(500).json({
@@ -220,9 +236,10 @@ export const attachFile = async(req, res) => {
   }
   const noteId = req.params.id
   const data = await noteSchema.findOne({ userId: req.userId, _id: noteId })
-  data.file=req.file.filename
+  data.file= "http://localhost:8000/uploads/" + req.file.filename
+
   await data.save()
-  return res.status(200).json({
+  res.status(200).json({
     success: true,
     message:"Folder Added Successfully",
     data:data
