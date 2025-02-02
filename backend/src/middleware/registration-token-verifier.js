@@ -59,7 +59,7 @@ export const verification = async (req, res) => {
     console.error(error);
     return res.status(500).json({
       success: false,
-      message: "An error occurred during email verification",
+      message: "Could not access",
     });
   }
 };

@@ -11,6 +11,6 @@ route.get('/verify', verification);
 route.post('/login', login)
 route.post('/logout', hasToken, logout)
 route.post('/regenerateToken', regenerate) //regeneration of access token
-route.post('/resendMail', resendMail) //resend mail for verification
+route.post('/resendMail', resendMail) //resend mail for verification(if registration token expires)
 
 export default route;

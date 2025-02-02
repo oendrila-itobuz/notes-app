@@ -1,29 +1,28 @@
-import multer from "multer"
 import noteSchema from "../models/notes-schema.js";
 
 // add note
 export const addNote = async (req, res) => {
   try {
     const { title, description } = req.body;
-    const existing = await noteSchema.findOne({ title: title, userId: req.userId })
+    const existing = await noteSchema.findOne({ title: title.trim(), userId: req.userId })
     if (existing) {
       return res.status(400).json({
         success: false,
         message: "This title Already Exists",
       });
     }
-    const data = await noteSchema.create({ title:title, description:description , userId: req.userId });
+    const data = await noteSchema.create({ title: title, description: description, userId: req.userId });
     if (data) {
       return res.status(200).json({
         success: true,
         message: "Note Created Success",
-        data: [{noteId:data._id, Title:data.title, description:data.description }]
+        data: [{ noteId: data._id, Title: data.title, description: data.description }]
       });
     }
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: "Could not access",
+      message: error,
     });
   }
 }
@@ -36,14 +35,20 @@ export const getNote = async (req, res) => {
       return res.status(200).json({
         success: true,
         message: "Fetched Successfully",
-        data: data.map((data) => [{noteId:data._id, Title:data.title, description:data.description }])
+        data: data.map((data) => [{ noteId: data._id, Title: data.title, description: data.description }])
+      })
+    }
+    else {
+      return res.status(404).json({
+        success: true,
+        message: "This user has no notes",
       })
     }
   }
   catch (error) {
     res.status(500).json({
       success: false,
-      message: "Cannot Fetch Successfully",
+      message: error,
     })
   }
 }
@@ -57,7 +62,7 @@ export const searchNote = async (req, res) => {
       res.status(200).json({
         success: true,
         message: "Fetched Successfully",
-        data: [{noteId:data._id, Title:data.title, description:data.description }]
+        data: [{ noteId: data._id, Title: data.title, description: data.description }]
       })
     }
     else {
@@ -70,7 +75,7 @@ export const searchNote = async (req, res) => {
   catch (error) {
     res.status(500).json({
       success: false,
-      message: "Cannot Fetch Successfully",
+      message: error,
     })
   }
 }
@@ -83,19 +88,18 @@ export const updateNote = async (req, res) => {
     const noteId = req.params.id
     const data = await noteSchema.findByIdAndUpdate({ userId: req.userId, _id: noteId })
     if (data) {
-      const existing= await noteSchema.findOne({ title:title , userId: req.userId})
+      const existing = await noteSchema.findOne({ title: title, userId: req.userId })
       console.log(existing)
-      if(existing)
-      {
+      if (existing) {
         res.status(400).json({
           success: false,
           message: "The title already exists",
         })
       }
-      else{
+      else {
         data.title = title;
         data.description = description;
-        data.updatedAt=Date.now()
+        data.updatedAt = Date.now()
         await data.save();
         res.status(200).json({
           success: true,
@@ -114,8 +118,7 @@ export const updateNote = async (req, res) => {
   catch (error) {
     res.status(500).json({
       success: false,
-      message: "Update not done",
-      data: null
+      message: error,
     })
   }
 }
@@ -133,16 +136,15 @@ export const deleteNote = async (req, res) => {
       })
     }
     else
-    res.status(400).json({
-      success: true,
-      message: "No such data found",
-    })
+      res.status(400).json({
+        success: true,
+        message: "No such data found",
+      })
   }
   catch (error) {
     res.status(500).json({
       success: false,
-      message: "Deletion not done",
-      data: null
+      message: error,
     })
   }
 }
@@ -178,7 +180,7 @@ export const filterNote = async (req, res) => {
   catch (error) {
     return res.status(500).json({
       success: false,
-      message: "Could not access",
+      message: error,
     });
   }
 }
@@ -205,7 +207,7 @@ export const pagination = async (req, res) => {
   catch (error) {
     return res.status(500).json({
       success: false,
-      message: "Could not access",
+      message: error,
     });
 
   }
@@ -214,41 +216,41 @@ export const pagination = async (req, res) => {
 //notes sorting based on latest updation
 
 export const sorting = async (req, res) => {
-  try{
-  const sortedDocuments = await noteSchema.find({ userId: req.userId }).sort({updatedAt:1 , title:1});
-  return res.status(200).json({
-    success: true,
-    message: sortedDocuments,
-  })
+  try {
+    const { order } = req.body
+    const sortedDocuments = await noteSchema.find({ userId: req.userId }).sort({ updatedAt: order, title: order });
+    return res.status(200).json({
+      success: true,
+      message: sortedDocuments,
+    })
   }
-  catch(error){
-    res.status(500).json({ 
-      message:error
+  catch (error) {
+    res.status(500).json({
+      message: error
     })
   }
 }
 
 //upload file
-export const attachFile = async(req, res) => {
-  try{
-  if (!req.file) {
+export const attachFile = async (req, res) => {
+  try {
+    if (!req.file) {
       return res.status(400).send('No file uploaded.');
-  }
-  const noteId = req.params.id
-  const data = await noteSchema.findOne({ userId: req.userId, _id: noteId })
-  data.file= "http://localhost:8000/uploads/" + req.file.filename
+    }
+    const noteId = req.params.id
+    const data = await noteSchema.findOne({ userId: req.userId, _id: noteId })
+    data.file = "http://localhost:8000/uploads/" + req.file.filename
 
-  await data.save()
-  res.status(200).json({
-    success: true,
-    message:"Folder Added Successfully",
-    data:data
-  })
-}
-catch(error)
-{
-  res.status(500).json({ 
-    message:error
-  })
-}
+    await data.save()
+    res.status(200).json({
+      success: true,
+      message: "Folder Added Successfully",
+      data: data
+    })
+  }
+  catch (error) {
+    res.status(500).json({
+      message: error
+    })
+  }
 }

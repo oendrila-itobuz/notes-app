@@ -1,6 +1,5 @@
-import multer from "multer"
+import multer from "multer";
 import path from "path";
-import noteSchema from "../models/notes-schema.js";
 import fs from "fs";
 
 const storage = multer.diskStorage({
@@ -12,10 +11,10 @@ const storage = multer.diskStorage({
 
 export const upload = multer({
     storage: storage,
-    limits: { fileSize: 1000000 } 
+    limits: { fileSize: 1000000 }
 });
 
 const dir = './uploads';
-if (!fs.existsSync(dir)){
-  fs.mkdirSync(dir);
+if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir);
 }

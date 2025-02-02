@@ -1,10 +1,10 @@
 import userSchema from "../models/user-schema.js";
-import sessionSchema from "../models/session-schema.js"
-import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
+import sessionSchema from "../models/session-schema.js";
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import { mailSend } from "./../email-verify/verification.js";
-import dotenv from "dotenv/config";
-import { response } from "express";
+import dotenv from "dotenv";
+dotenv.config();
 
 // user registration
 
@@ -24,7 +24,7 @@ export const register = async (req, res) => {
     const token = jwt.sign(
       { id: user._id },
       process.env.secretKey,
-      { expiresIn: "2m" }
+      { expiresIn: "2min" }
     );
     mailSend(token, email);
     user.token = token;
@@ -49,7 +49,6 @@ export const resendMail = async (req,res) =>
   try{
   const {email} = req.body
   const user = await userSchema.findOne({email:email})
-  console.log(user)
   if(user){
     const token = jwt.sign(
       { id: user._id },
@@ -88,12 +87,17 @@ export const login = async (req, res) => {
     const { email, password } = req.body
     const user = await userSchema.findOne({ email: email });
     if (!user) {
-      return res.status(401).json({ error: 'This email is not registered' });
+      return res.status(401).json({ 
+        success:false,
+        error: 'Unauthorized Access' 
+      });
     }
     else {
       const passwordMatch = await bcrypt.compare(password, user.password);
       if (!passwordMatch) {
-        return res.status(401).json({ error: 'Incorrect password' });
+        return res.status(401).json({ 
+          success: false,
+          error: 'Incorrect password' });
       }
       else if (passwordMatch && user.verified === true) {
         const existing = await sessionSchema.findOne({ userId: user._id });
@@ -109,7 +113,7 @@ export const login = async (req, res) => {
             id: user._id
           },
           process.env.secretKey,
-          { expiresIn: "1sec" }
+          { expiresIn: "1min" }
         );
         const refreshToken = jwt.sign(
           {
@@ -152,7 +156,7 @@ export const logout = async (req, res) => {
       })
     }
     else {
-      return res.status(200).json({
+      return res.status(404).json({
         success: false,
         message: "User had no session"
       })
@@ -166,7 +170,7 @@ export const logout = async (req, res) => {
   }
 }
 
-//regeneration of accesstoken
+//regeneration of accesstoken using refreshtoken
 export const regenerate = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
@@ -180,7 +184,7 @@ export const regenerate = async (req, res) => {
       const token = authHeader.split(' ')[1];
       jwt.verify(token, process.env.secretKey, async (err, decoded) => {
         if (err) {
-          if (err.name === "TokenExpiredError")
+          if (err.name === "TokenExpiredError") // refresh token has also epired
             return res.status(400).json({
               success: false,
               message: "The access token has expired use the refresh token to regenerate it ",
