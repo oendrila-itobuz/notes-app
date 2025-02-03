@@ -177,22 +177,16 @@ export const regenerate = async (req, res) => {
     if (!authHeader || !authHeader.startsWith('Bearer')) {
       return res.status(401).json({
         success: false,
-        message: "Refresh token is missing or invalid",
+        message: "Refresh token is missing",
       });
     }
     else {
       const token = authHeader.split(' ')[1];
       jwt.verify(token, process.env.secretKey, async (err, decoded) => {
         if (err) {
-          if (err.name === "TokenExpiredError") // refresh token has also epired
             return res.status(400).json({
               success: false,
-              message: "The access token has expired use the refresh token to regenerate it ",
-            });
-          else
-            return res.status(400).json({
-              success: false,
-              message: "The access token is invalid",
+              message: "The refresh token is invalid",
             });
         }
         else {
