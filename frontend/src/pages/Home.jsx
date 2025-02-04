@@ -1,11 +1,9 @@
-import coverImage from '../assets/images/coverImage.jpg'
+import React from 'react'
 
-function Home() {
+export default function Home() {
   return (
-    <>
-    <img src={coverImage}></img>
-    </>
+    <div>
+      helloo logged in user
+    </div>
   )
 }
-
-export default Home

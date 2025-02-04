@@ -95,7 +95,7 @@ export const login = async (req, res) => {
     else {
       const passwordMatch = await bcrypt.compare(password, user.password);
       if (!passwordMatch) {
-        return res.status(401).json({ 
+        return res.status(402).json({ 
           success: false,
           error: 'Incorrect password' });
       }
@@ -123,6 +123,7 @@ export const login = async (req, res) => {
           { expiresIn: "30days" }
         );
         return res.status(200).json({
+          success:true,
           message: "User logged In",
           accessToken: accessToken,
           refreshToken: refreshToken
