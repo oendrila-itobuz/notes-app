@@ -1,17 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import Home from "./Cover.jsx";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import toast from "react-hot-toast";
 
 const userSchema = yup.object({
   userName: yup
     .string()
     .trim()
-    .min(5, "userName must be at least 8 characters")
+    .min(5, "userName must be at least 5 characters")
     .max(20, "userName must be at most 20 characters"),
   email: yup.string().email("The email is not a valid one").required(),
   password: yup
@@ -23,8 +22,10 @@ const userSchema = yup.object({
     .matches(/\W/, "Must include at least one special character"),
 });
 
-const register = () => {
+const Register = () => {
   const navigate = useNavigate();
+  const [successMessage, setSuccessMessage] = useState("");
+  const [backendErrorMessage, setBackendErrorMessage] = useState("");
   const { register, handleSubmit, reset, formState } = useForm({
     resolver: yupResolver(userSchema),
   });
@@ -33,38 +34,51 @@ const register = () => {
     try {
       const res = await axios.post("http://localhost:8000/user/register", data);
       if (res.data.success) {
-        console.log(res.data);
-        toast.success("Form submitted successfully");
-        if (res.data.success === true) {
+        setSuccessMessage("Registration successful! Please check your email for the verification link.");
+
+        setTimeout(() => {
           navigate("/login");
-        }
+        }, 3000);
+
         e.target.reset();
+      } else {
+        setBackendErrorMessage(res.data.message || "Registration failed. Please try again.");
       }
+
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      if (error.response && error.response.data) {
+        setBackendErrorMessage(error.response.data.message || "An error occurred. Please try again.");
+      } else {
+        setBackendErrorMessage("Server error. Please try again later.");
+      }
     }
   };
+
   return (
     <form onSubmit={handleSubmit(onSubmit, onError)}>
+      <p className="text-xs text-green-600 font-semibold h-6 bg-purple-100">
+        {successMessage}
+      </p>
+      <p className="text-xs text-red-600 font-semibold h-6 bg-red-100">
+        {backendErrorMessage}
+      </p>
       <div className="flex items-center justify-center h-screen w-full px-5 sm:px-0 bg-purple-100">
         <div className="flex bg-white rounded-lg shadow-lg border overflow-hidden max-w-sm lg:max-w-4xl w-full">
           <div className="hidden lg:block lg:w-1/2 bg-cover object-contain self-center p-5">
-            {" "}
-            <Home></Home>{" "}
+            <Home />
           </div>
           <div className="w-full p-8 lg:w-1/2 bg-sky-100">
             <p className="text-xl text-gray-600 text-center">
-              Welcome To Our Notes App !
+              Welcome To Our Notes App!
             </p>
             <div className="mt-4">
-
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 User Name
               </label>
               <input
-                className="text-gray-700 border border-gray-300 rounded py-2 px-4 block w-full focus:outline-2 focus:outline-blue-700 "
+                className="text-gray-700 border border-gray-300 rounded py-2 px-4 block w-full focus:outline-2 focus:outline-blue-700"
                 type="text"
-                name="userName"
                 {...register("userName")}
                 required
               />
@@ -78,12 +92,11 @@ const register = () => {
               <input
                 className="text-gray-700 border border-gray-300 rounded py-2 px-4 block w-full focus:outline-2 focus:outline-blue-700"
                 type="email"
-                name="email"
                 {...register("email")}
                 required
               />
               <p className="text-xs text-red-600 font-semibold h-6">
-                {formState.errors.userName?.message}
+                {formState.errors.email?.message}
               </p>
 
               <label className="text-gray-700 text-sm font-bold mb-2">
@@ -92,14 +105,12 @@ const register = () => {
               <input
                 className="text-gray-700 border border-gray-300 rounded py-2 px-4 block w-full focus:outline-2 focus:outline-blue-700 mt-2"
                 type="password"
-                name="password"
                 {...register("password")}
                 required
               />
               <p className="text-xs text-red-600 font-semibold h-6">
                 {formState.errors.password?.message}
               </p>
-
             </div>
             <div className="mt-8">
               <button className="bg-blue-700 text-white font-bold py-2 px-4 w-full rounded hover:bg-blue-600">
@@ -113,4 +124,4 @@ const register = () => {
   );
 };
 
-export default register;
+export default Register;
