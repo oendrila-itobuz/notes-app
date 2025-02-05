@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react"
 import { useParams,useNavigate } from 'react-router-dom'
 import axios from "axios";
 
-const VerifyEmail = () => {
+const Verify = () => {
+  console.log("hii")
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const params = useParams()
@@ -12,14 +13,15 @@ const VerifyEmail = () => {
 
   const Verification = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/user/verify", {
+      const res = await axios.get(`http://localhost:8000/user/verify`, {
         headers: {
           Authorization: `Bearer ${verifyToken}`,
         },
       });
       console.log(res)
       setMessage(res.data.message);
-      setTimeout(() => navigate("/login"), 3000); // Redirect to login after 3 seconds
+      console.log(res.data.message)
+      setTimeout(() => navigate("/login"), 3000);
     } catch (err) {
       console.log(err)
     }
@@ -29,10 +31,10 @@ const VerifyEmail = () => {
   return (
     <div className="flex items-center justify-center h-screen bg-pink-100">
       <div className="bg-white p-6 rounded shadow-md text-center">
-      {message}
+      {message}   
       </div>
     </div>
   );
 };
 
-export default VerifyEmail;
+export default Verify;

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import Home from "./Cover.jsx";
+import Cover from "./Cover.jsx";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -33,19 +33,20 @@ const Register = () => {
   const onSubmit = async (data, e) => {
     try {
       const res = await axios.post("http://localhost:8000/user/register", data);
+      console.log(res.data.message )
       if (res.data.success) {
         setSuccessMessage("Registration successful! Please check your email for the verification link.");
-        setTimeout(() => {
-          navigate("/login");
-        }, 3000);
-        e.target.reset();
+        // console.log(res.data.message )
+        // setTimeout(() => {
+        //   navigate("/login");
+        // }, 3000);
       } else {
-        setBackendErrorMessage(res.data.message || "Registration failed. Please try again.");
+        setBackendErrorMessage( res.data.message || "Registration failed. Please try again.");
       }
     } catch (error) {
-        setBackendErrorMessage("Server error. Please try again later.");
+        setBackendErrorMessage(error.response.data.message);
     }
- };
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit, onError)}>
@@ -58,7 +59,7 @@ const Register = () => {
       <div className="flex items-center justify-center h-screen w-full px-5 sm:px-0 bg-purple-100">
         <div className="flex bg-white rounded-lg shadow-lg border overflow-hidden max-w-sm lg:max-w-4xl w-full">
           <div className="hidden lg:block lg:w-1/2 bg-cover object-contain self-center p-5">
-            <Home />
+            <Cover />
           </div>
           <div className="w-full p-8 lg:w-1/2 bg-sky-100">
             <p className="text-xl text-gray-600 text-center">

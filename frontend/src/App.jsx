@@ -7,11 +7,11 @@ import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import Home from './pages/Home.jsx'
 import Verify from './pages/verify.jsx';
+
 function App() {
   return (
     <>
       <BrowserRouter>
-      <Header/>
         <Routes>
           <Route path='/' element={<Cover />} />
           <Route path='/login' element={<Login />} />

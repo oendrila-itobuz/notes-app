@@ -13,7 +13,7 @@ export const register = async (req, res) => {
     const { userName, email, password } = req.body;
     const existing = await userSchema.findOne({ email: email });
     if (existing) {
-      return res.status(400).json({
+      return res.status(401).json({
         success: false,
         message: "User Already Exists",
       });
