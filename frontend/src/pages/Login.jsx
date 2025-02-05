@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import Cover from './Cover.jsx';
 
 const loginSchema = yup.object({
   email: yup.string().email("Invalid email address").required("Email is required"),
@@ -12,34 +13,43 @@ const loginSchema = yup.object({
 
 const Login = () => {
   const navigate = useNavigate();
-  const [errorMessage, setErrorMessage] = useState("");
+  const [backendErrorMessage, setBackendErrorMessage] = useState("");
   const { register, handleSubmit, formState } = useForm({
     resolver: yupResolver(loginSchema),
   });
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data,e) => {
     try {
       const res = await axios.post("http://localhost:8000/user/login", data);
+      console.log(res)
       if (res.data.success) {
         localStorage.setItem("accessToken", res.data.accessToken); 
         localStorage.setItem("refreshToken", res.data.refreshToken); 
         navigate("/home"); 
       } else {
-        setErrorMessage(res.data.message || "Login failed. Please try again.");
+        setBackendErrorMessage(res.data.message || "Login failed. Please try again.");
       }
     } catch (error) {
-      console.error(error);
-      setErrorMessage(error.response?.data?.message || "Server error. Please try again later.");
-    }
+      setBackendErrorMessage("Unauthorized access detected, verify your credentials");
+  }
   };
+   
+  const handleRegister = () =>{
+    navigate('/register')
+  }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex items-center justify-center h-screen w-full px-5 sm:px-0 bg-gray-100">
+    <form onSubmit={handleSubmit(onSubmit)}>
+    <p className="text-xs text-red-600 font-semibold h-6 bg-purple-100 text-center">
+      {backendErrorMessage}
+    </p>
+    <div className="flex items-center justify-center h-screen w-full px-5 sm:px-0 bg-purple-100">
       <div className="flex bg-white rounded-lg shadow-lg border overflow-hidden max-w-sm lg:max-w-4xl w-full">
+        <div className="hidden lg:block lg:w-1/2 bg-cover object-contain self-center p-5">
+          <Cover/>
+        </div>
         <div className="w-full p-8 lg:w-1/2 bg-sky-100">
           <p className="text-xl text-gray-600 text-center">Welcome Back!</p>
-          {errorMessage && <p className="text-xs text-red-600 font-semibold h-6 bg-red-100">{errorMessage}</p>}
-
           <div className="mt-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
             <input
@@ -65,7 +75,23 @@ const Login = () => {
               Login
             </button>
           </div>
+          <a
+            href="#"
+            className=" flex items-center justify-center mt-4 text-white rounded-lg shadow-md hover:bg-gray-100"
+          >
+           
+          </a>
+          <div className="mt-4 flex items-center w-full text-center">
+            <a
+              href="#"
+              className="text-xs text-gray-500 capitalize text-center w-full"
+            >
+              Don&apos;t have any account yet?
+              <span className="text-blue-700" onClick={handleRegister} > Sign Up</span>
+            </a>
+          </div>
         </div>
+      </div>
       </div>
     </form>
   );

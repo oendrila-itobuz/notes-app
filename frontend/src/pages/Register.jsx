@@ -26,7 +26,7 @@ const Register = () => {
   const navigate = useNavigate();
   const [successMessage, setSuccessMessage] = useState("");
   const [backendErrorMessage, setBackendErrorMessage] = useState("");
-  const { register, handleSubmit, reset, formState } = useForm({
+  const { register, handleSubmit,formState } = useForm({
     resolver: yupResolver(userSchema),
   });
   const onError = (errors, e) => console.log(errors, e);
@@ -35,32 +35,24 @@ const Register = () => {
       const res = await axios.post("http://localhost:8000/user/register", data);
       if (res.data.success) {
         setSuccessMessage("Registration successful! Please check your email for the verification link.");
-
         setTimeout(() => {
           navigate("/login");
         }, 3000);
-
         e.target.reset();
       } else {
         setBackendErrorMessage(res.data.message || "Registration failed. Please try again.");
       }
-
     } catch (error) {
-      console.error(error);
-      if (error.response && error.response.data) {
-        setBackendErrorMessage(error.response.data.message || "An error occurred. Please try again.");
-      } else {
         setBackendErrorMessage("Server error. Please try again later.");
-      }
     }
-  };
+ };
 
   return (
     <form onSubmit={handleSubmit(onSubmit, onError)}>
-      <p className="text-xs text-green-600 font-semibold h-6 bg-purple-100">
+      <p className="text-xs text-green-600 font-semibold h-6 bg-purple-100 text-center">
         {successMessage}
       </p>
-      <p className="text-xs text-red-600 font-semibold h-6 bg-red-100">
+      <p className="text-xs text-red-600 font-semibold h-6 bg-purple-100 text-center">
         {backendErrorMessage}
       </p>
       <div className="flex items-center justify-center h-screen w-full px-5 sm:px-0 bg-purple-100">
