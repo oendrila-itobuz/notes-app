@@ -6,7 +6,7 @@ export default function Header({redirect}) {
 const navigate = useNavigate();
 
 const handlechange=()=>{
-  navigate(`/${redirect.path}`)
+  navigate(`/login`)
 }
 
   return (

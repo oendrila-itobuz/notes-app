@@ -37,9 +37,9 @@ const Register = () => {
       if (res.data.success) {
         setSuccessMessage("Registration successful! Please check your email for the verification link.");
         // console.log(res.data.message )
-        // setTimeout(() => {
-        //   navigate("/login");
-        // }, 3000);
+        setTimeout(() => {
+          navigate("/login");
+        }, 3000);
       } else {
         setBackendErrorMessage( res.data.message || "Registration failed. Please try again.");
       }

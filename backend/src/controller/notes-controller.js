@@ -1,5 +1,5 @@
 import noteSchema from "../models/notes-schema.js";
-
+import userSchema from "../models/user-schema.js";
 // add note
 export const addNote = async (req, res) => {
   try {
@@ -31,11 +31,13 @@ export const addNote = async (req, res) => {
 export const getNote = async (req, res) => {
   try {
     const data = await noteSchema.find({ userId: req.userId })
+    const user = await userSchema.findById({ _id: req.userId })
     if (data) {
       return res.status(200).json({
         success: true,
         message: "Fetched Successfully",
-        data: data.map((data) => [{ noteId: data._id, Title: data.title, description: data.description }])
+        user:user.userName,
+        data: data
       })
     }
     else {
@@ -166,7 +168,7 @@ export const filterNote = async (req, res) => {
     console.log(filteredNotes)
     if (flag === true) {
       return res.status(200).json({
-        success: false,
+        success: true,
         data: filteredNotes
       })
     }
