@@ -1,12 +1,28 @@
 import React from 'react'
 import logo from '../assets/images/logo.svg'
 import { Link, useNavigate } from 'react-router-dom';
+import axios from "axios";
 
 export default function Header({redirect}) {
 const navigate = useNavigate();
 
-const handlechange=()=>{
+const handlechange = async()=>{
   navigate(`/login`)
+  console.log(redirect)
+  if (redirect.path==='logout')
+  {
+    const accessToken = localStorage.getItem("accessToken");
+    try {
+      console.log("hii")
+      const res = await axios.get("http://localhost:8000/user/logout",{
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });}
+      catch(error){
+      console.log (error.message)
+      }
+  }
 }
 
   return (

@@ -16,7 +16,7 @@ export const addNote = async (req, res) => {
       return res.status(200).json({
         success: true,
         message: "Note Created Success",
-        data: [{ noteId: data._id, Title: data.title, description: data.description }]
+        data: [data]
       });
     }
   } catch (error) {

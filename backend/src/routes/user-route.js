@@ -9,7 +9,7 @@ const route = express.Router();
 route.post('/register', validateUser(userSchema), register);
 route.get('/verify', verification);
 route.post('/login', login)
-route.post('/logout', hasToken, logout)
+route.get('/logout', hasToken, logout)
 route.post('/regenerateToken', regenerate) //regeneration of access token
 route.post('/resendMail', resendMail) //resend mail for verification(if registration token expires)
 

@@ -8,6 +8,7 @@ import Register from './pages/Register.jsx';
 import Home from './pages/Home.jsx'
 import Verify from './pages/verify.jsx';
 
+
 function App() {
   return (
     <>
