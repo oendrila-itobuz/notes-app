@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
-import Cover from "./Cover.jsx";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import Header from "../components/Header.jsx";
+import Footer from "../components/Footer.jsx";
+import coverImage from '../assets/images/coverImage.jpg'
 
 const userSchema = yup.object({
   userName: yup
@@ -24,8 +27,6 @@ const userSchema = yup.object({
 
 const Register = () => {
   const navigate = useNavigate();
-  const [successMessage, setSuccessMessage] = useState("");
-  const [backendErrorMessage, setBackendErrorMessage] = useState("");
   const { register, handleSubmit,formState } = useForm({
     resolver: yupResolver(userSchema),
   });
@@ -33,33 +34,27 @@ const Register = () => {
   const onSubmit = async (data, e) => {
     try {
       const res = await axios.post("http://localhost:8000/user/register", data);
-      console.log(res.data.message )
       if (res.data.success) {
-        setSuccessMessage("Registration successful! Please check your email for the verification link.");
-        // console.log(res.data.message )
+        toast.success("Registration successful! Please check your email for the verification link.")
         setTimeout(() => {
           navigate("/login");
         }, 3000);
       } else {
-        setBackendErrorMessage( res.data.message || "Registration failed. Please try again.");
+        toast.error(res.data.message || "Registration failed. Please try again.");
       }
     } catch (error) {
-        setBackendErrorMessage(error.response.data.message);
+      toast.error(error.response?.data?.message || "An unexpected error occurred.");
     }
   };
 
   return (
+    <>
+    <Header redirect={{path:"Login"}}></Header>
     <form onSubmit={handleSubmit(onSubmit, onError)}>
-      <p className="text-xs text-green-600 font-semibold h-6 bg-purple-100 text-center">
-        {successMessage}
-      </p>
-      <p className="text-xs text-red-600 font-semibold h-6 bg-purple-100 text-center">
-        {backendErrorMessage}
-      </p>
-      <div className="flex items-center justify-center h-screen w-full px-5 sm:px-0 bg-purple-100">
+      <div className="flex items-center justify-center h-screen w-full px-5 sm:px-0 bg-purple-300">
         <div className="flex bg-white rounded-lg shadow-lg border overflow-hidden max-w-sm lg:max-w-4xl w-full">
           <div className="hidden lg:block lg:w-1/2 bg-cover object-contain self-center p-5">
-            <Cover />
+            <img src={coverImage}></img>
           </div>
           <div className="w-full p-8 lg:w-1/2 bg-sky-100">
             <p className="text-xl text-gray-600 text-center">
@@ -114,6 +109,9 @@ const Register = () => {
         </div>
       </div>
     </form>
+    <Footer></Footer>
+    <ToastContainer></ToastContainer>
+    </>
   );
 };
 

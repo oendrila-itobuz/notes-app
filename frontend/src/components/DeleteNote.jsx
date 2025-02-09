@@ -26,11 +26,8 @@ export default function DeleteNote() {
           if (res.data.success) {
             setNoteId("")
             setOpenModal(false);
-            notes.map((note)=>{
-             if(note._id!==noteId)
-              return note
-            })
-            setNotes([...notes])
+            const updatedNotes = notes.filter(note => note._id !== noteId);
+            setNotes(updatedNotes)
             console.log(notes)
           }
           else {

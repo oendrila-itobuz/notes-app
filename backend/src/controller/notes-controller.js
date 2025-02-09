@@ -106,7 +106,7 @@ export const updateNote = async (req, res) => {
         res.status(200).json({
           success: true,
           message: "Updated Successfully",
-          data: [data._id, data.title, data.description]
+          data: data
         })
       }
     }
@@ -253,6 +253,38 @@ export const attachFile = async (req, res) => {
   catch (error) {
     res.status(500).json({
       message: error
+    })
+  }
+}
+
+
+//together Sorting pagination and get all notes
+
+export const getAllNotes = async (req, res) => {
+  try {
+   
+    const { order } = req.body
+    const data = await noteSchema.find({ userId: req.userId }).sort({ updatedAt: order, title: order })
+    const user = await userSchema.findById({ _id: req.userId })
+    if (data) {
+      return res.status(200).json({
+        success: true,
+        message: "Fetched Successfully",
+        user:user.userName,
+        data: data
+      })
+    }
+    else {
+      return res.status(404).json({
+        success: true,
+        message: "This user has no notes",
+      })
+    }
+  }
+  catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error,
     })
   }
 }

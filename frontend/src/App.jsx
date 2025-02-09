@@ -18,7 +18,7 @@ function App() {
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
           <Route path='/home' element={<Home />} />
-          <Route path='/verify/:token' element={<Verify/>}/>
+          <Route path='/user/verify/:token' element={<Verify/>}/>
         </Routes>
       </BrowserRouter>
     </>

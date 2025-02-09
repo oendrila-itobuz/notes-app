@@ -1,10 +1,15 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import Cover from './Cover.jsx';
+import Header from "../components/Header.jsx";
+import Footer from "../components/Footer.jsx";
+import coverImage from '../assets/images/coverImage.jpg'
+import { ToastContainer, toast } from 'react-toastify';
+import { UserContext } from "../context/UserContext.jsx";
+
 
 const loginSchema = yup.object({
   email: yup.string().email("Invalid email address").required("Email is required"),
@@ -13,10 +18,10 @@ const loginSchema = yup.object({
 
 const Login = () => {
   const navigate = useNavigate();
-  const [backendErrorMessage, setBackendErrorMessage] = useState("");
   const { register, handleSubmit, formState } = useForm({
     resolver: yupResolver(loginSchema),
   });
+  const { setisLoggedIn } = useContext(UserContext);
 
   const onSubmit = async (data,e) => {
     try {
@@ -25,12 +30,13 @@ const Login = () => {
       if (res.data.success) {
         localStorage.setItem("accessToken", res.data.accessToken); 
         localStorage.setItem("refreshToken", res.data.refreshToken); 
+        setisLoggedIn(res.data.user)
         navigate("/home"); 
       } else {
-        setBackendErrorMessage(res.data.message || "Login failed. Please try again.");
+        toast.error(res.data.message || "Login failed. Please try again.");
       }
     } catch (error) {
-      setBackendErrorMessage("Unauthorized access detected, verify your credentials");
+      toast.error("Unauthorized access detected, verify your credentials");
   }
   };
    
@@ -39,14 +45,13 @@ const Login = () => {
   }
 
   return (
+    <>
+    <Header redirect={{path:"Login"}}></Header>
     <form onSubmit={handleSubmit(onSubmit)}>
-    <p className="text-xs text-red-600 font-semibold h-6 bg-purple-100 text-center">
-      {backendErrorMessage}
-    </p>
-    <div className="flex items-center justify-center h-screen w-full px-5 sm:px-0 bg-purple-100">
+    <div className="flex items-center justify-center h-screen w-full px-5 sm:px-0 bg-purple-200">
       <div className="flex bg-white rounded-lg shadow-lg border overflow-hidden max-w-sm lg:max-w-4xl w-full">
         <div className="hidden lg:block lg:w-1/2 bg-cover object-contain self-center p-5">
-          <Cover/>
+           <img src={coverImage}></img>
         </div>
         <div className="w-full p-8 lg:w-1/2 bg-sky-100">
           <p className="text-xl text-gray-600 text-center">Welcome Back!</p>
@@ -94,6 +99,9 @@ const Login = () => {
       </div>
       </div>
     </form>
+    <Footer></Footer>
+    <ToastContainer></ToastContainer>
+    </>
   );
 };
 
