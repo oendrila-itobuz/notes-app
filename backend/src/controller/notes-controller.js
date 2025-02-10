@@ -193,17 +193,14 @@ export const pagination = async (req, res) => {
   try {
     const { limit, page } = req.body
     const offset = (page - 1) * limit;
-    const notes = await noteSchema.find()
+    const notes = await noteSchema.find({ userId: req.userId })
       .skip(offset)
       .limit(limit);
-
+    const user = await userSchema.findById({ _id: req.userId })
     res.status(200).json({
-      totalResults: notes.length,
-      output: notes.map(note => ({
-        NoteId: note._id,
-        title: note.title,
-        description: note.description
-      }))
+      success:true,
+      user:user.userName,
+      data:notes
     })
   }
   catch (error) {
@@ -262,7 +259,6 @@ export const attachFile = async (req, res) => {
 
 export const getAllNotes = async (req, res) => {
   try {
-   
     const { order } = req.body
     const data = await noteSchema.find({ userId: req.userId }).sort({ updatedAt: order, title: order })
     const user = await userSchema.findById({ _id: req.userId })
@@ -287,4 +283,25 @@ export const getAllNotes = async (req, res) => {
       message: error,
     })
   }
+}
+
+// getAll sort search paginate
+
+export const allChecks = async(req,res)=>
+{
+  const limit=4
+  const { title,page,order } = req.body
+  const offset = (page - 1) * limit;
+  try{
+  const notes = await noteSchema.find({ userId: req.userId , title:{"$regex":title,$options:'i'}}).sort({ updatedAt: order, title: order }).skip(offset).limit(limit) 
+  return res.status(200).json({
+    success: true,
+    message: notes,
+  })
+}
+catch (error) {
+  res.status(500).json({
+    message: error.message
+  })
+}
 }
