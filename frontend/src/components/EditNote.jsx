@@ -7,7 +7,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { GrEdit } from "react-icons/gr";
 
-// Validation Schema
 export const noteSchema = yup.object({
   title: yup.string().trim()
       .min(5, 'Title must be at least 5 characters')
@@ -22,21 +21,20 @@ export default function EditNote() {
   const { notes, setNotes, noteId } = useContext(NoteContext);
   const [backendErrorMessage, setBackendErrorMessage] = useState("");
 console.log("before",noteId)
-  // ✅ State for Selected Note
+
   const { Selectednote, setSelectedNote } = useContext(NoteContext)
 
-  // ✅ Initialize `useForm` (without default values)
   const { register, handleSubmit, formState: { errors }, setValue } = useForm({
     resolver: yupResolver(noteSchema),
   });
   setValue("title", Selectednote.title);
   setValue("description", Selectednote.description);
-  // ✅ Function to Open Modal and Set Note Data
+  
   const openEditModal = async () => {
     setOpenModal(true);
   };
 
-  // ✅ Function to Update Note
+ 
   const editNote = async (data) => {
     try {
       const res = await axios.put(
@@ -46,12 +44,12 @@ console.log("before",noteId)
       );
 
       if (res.data.success) {
-        // ✅ Create a new updated array
+       
         const updatedNotes = notes.map(note =>
           note._id === noteId ? { ...note, title: data.title, description: data.description } : note
         );
 
-        setNotes(updatedNotes); // ✅ Update state properly
+        setNotes(updatedNotes); 
         setOpenModal(false);
       } else {
         setBackendErrorMessage(res.data.message);

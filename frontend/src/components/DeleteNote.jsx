@@ -9,7 +9,7 @@ import { NoteContext } from '../context/NoteContext';
 import axios from "axios";
 import Home from '../pages/Home';
 
-export default function DeleteNote() {
+export default function DeleteNßote() {
       const [openModal, setOpenModal] = useState(false);
       const accessToken = localStorage.getItem("accessToken");
       const { noteId, setNoteId } = useContext(NoteContext)

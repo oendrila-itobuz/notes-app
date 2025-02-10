@@ -8,7 +8,7 @@ import Header from "../components/Header.jsx";
 import Footer from "../components/Footer.jsx";
 import coverImage from '../assets/images/coverImage.jpg'
 import { ToastContainer, toast } from 'react-toastify';
-import { UserContext } from "../context/UserContext.jsx";
+// import { UserContext } from "../context/UserContext.jsx";
 
 
 const loginSchema = yup.object({
@@ -21,7 +21,7 @@ const Login = () => {
   const { register, handleSubmit, formState } = useForm({
     resolver: yupResolver(loginSchema),
   });
-  const { setisLoggedIn } = useContext(UserContext);
+  // const { setisLoggedIn } = useContext(UserContext);
 
   const onSubmit = async (data,e) => {
     try {
@@ -30,7 +30,7 @@ const Login = () => {
       if (res.data.success) {
         localStorage.setItem("accessToken", res.data.accessToken); 
         localStorage.setItem("refreshToken", res.data.refreshToken); 
-        setisLoggedIn(res.data.user)
+        // setisLoggedIn(res.data.user)
         navigate("/home"); 
       } else {
         toast.error(res.data.message || "Login failed. Please try again.");

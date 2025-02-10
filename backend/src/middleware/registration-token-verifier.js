@@ -37,20 +37,14 @@ export const verification = async (req, res) => {
               message: "User not found",
             });
           }
-          else if (user.verified === true) {
-            return res.status(200).json({
-              success: true,
-              message: "Email is already verified",
-            });
-          }
           else {
             user.token = null;
             user.verified = true;
             await user.save();
             return res.status(200).json({
               success: true,
-              message: "Email verified successfully",
-            });
+              message: "Email verified successfully",}
+            )
           }
         }
       });

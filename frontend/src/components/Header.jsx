@@ -38,7 +38,7 @@ export default function Header({ redirect }) {
         </div>
         <Link to="/login" onClick={handlechange} className="self-center text-xl font-serif px-3 py-1 border border-gray-700 rounded-md transition-all hover:border-[#8B0000] hover:text-[#8B0000]">{redirect.path} &rarr;</Link>
       </nav>
-      <hr class="border-gray-200 sm:mx-auto" />
+      <hr className="border-gray-200 sm:mx-auto" />
       <ToastContainer />
     </>
   )
