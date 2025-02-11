@@ -21,6 +21,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  file:{
+    type:String,
+    default:""
+  }
 })
 
 export default mongoose.model("user", userSchema)

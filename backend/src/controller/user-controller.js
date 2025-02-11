@@ -231,3 +231,26 @@ export const regenerate = async (req, res) => {
     });
   }
 }
+
+// user profile picture
+export const attachFile = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).send('No file uploaded.');
+    }
+    const data = await userSchema.findOne({_id: req.userId})
+    data.file = "http://localhost:8000/uploads/" + req.file.filename
+
+    await data.save()
+    res.status(200).json({
+      success: true,
+      message: "Profile Picture Added Successfully",
+      data: data
+    })
+  }
+  catch (error) {
+    res.status(500).json({
+      message: error.message
+    })
+  }
+}

@@ -6,7 +6,7 @@ import axios from "axios";
 import { Button, Modal } from "flowbite-react";
 import AddNote from '../components/AddNote';
 import { useContext } from 'react'
-import { NoteContext } from '../context/NoteContext';
+import { GlobalContext } from '../context/GlobalContext';
 import { MdDelete } from "react-icons/md";
 import { GrFormView } from "react-icons/gr";
 import { GrEdit } from "react-icons/gr";
@@ -21,73 +21,69 @@ import UserDetails from '../components/UserDetails';
 
 export default function Home() {
   const accessToken = localStorage.getItem("accessToken");
-  const {user, setUser} = useContext(NoteContext)
+  const { user, setUser } = useContext(GlobalContext)
   const [message, setmessage] = useState("")
   const { register, handleSubmit, formState } = useForm({});
-  const { notes, setNotes } = useContext(NoteContext)
-  const { noteId, setNoteId } = useContext(NoteContext)
-  const { Selectednote, setSelectedNote } = useContext(NoteContext)
-  const { totalpages, settotalpages } = useContext(NoteContext)
+  const { notes, setNotes } = useContext(GlobalContext)
+  const { noteId, setNoteId } = useContext(GlobalContext)
+  const { Selectednote, setSelectedNote } = useContext(GlobalContext)
+  const { totalpages, settotalpages } = useContext(GlobalContext)
   const [sortBy, setsortBy] = useState(false)
-  const [openModal, setOpenModal] = useState(true);
-  const [searchItem,setSearchItem] =useState("")
-  const [currentpage,setcurrentpage]=useState(1)
-  const [order,setorder]=useState("desc")
-  const {triggeredEvent,setTriggeredEvent} =useContext(NoteContext)
-  
+  const [searchItem, setSearchItem] = useState("")
+  const [currentpage, setcurrentpage] = useState(1)
+  const [order, setorder] = useState("desc")
+  const { triggeredEvent, setTriggeredEvent } = useContext(GlobalContext)
+
   console.log(notes)
 
-   const onSubmit = (data) =>{
-    console.log("search",data.title)
-     setSearchItem(data.title)
-   }
-   
-   const fetchNotes=async()=>{
-    const data={
-      "title":searchItem,
-      "page":currentpage,
-       "order":order
+  const onSubmit = (data) => {
+    setSearchItem(data.title)
+  }
+
+  const fetchNotes = async () => {
+    const data = {
+      "title": searchItem,
+      "page": currentpage,
+      "order": order
     }
-       try{
-        const res=await axios.post("http://localhost:8000/note/getAll",data,
-          {
-            headers:{
-              Authorization:`Bearer ${accessToken}`
-            }
+    try {
+      const res = await axios.post("http://localhost:8000/note/getAll", data,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
           }
-        )
-        if(res.data.success){
-          setNotes(res.data.message)
-          setUser(res.data.user)
-          settotalpages(res.data.totalpages)
-          console.log(res.data)
-          setTriggeredEvent(false)
         }
-       }
-       catch(error)
-       {
-        console.log(error)
-       }
-   }
- 
+      )
+      if (res.data.success) {
+        setNotes(res.data.message)
+        setUser(res.data.user)
+        settotalpages(res.data.totalpages)
+        setTriggeredEvent(false)
+      }
+    }
+    catch (error) {
+      console.log(error)
+    }
+  }
+
 
   useEffect(() => {
     fetchNotes()
-  }, [currentpage,searchItem,order,triggeredEvent])
+  }, [currentpage, searchItem, order, triggeredEvent])
 
   const handleNoteClick = (noteId) => {
     setNoteId(noteId);
     const note = notes.find(note => note._id === noteId);
     setSelectedNote(note);
-    console.log(Selectednote,"selectednote")
+    console.log(Selectednote, "selectednote")
   }
   return (
     <>
       <Header redirect={{ path: "Logout" }}></Header>
       <div className='min-h-screen bg-purple-200'>
         <div className='flex justify-between p-2'>
-        <div className="text-3xl font-serif p-2">Welcome,{user}</div>
-        <UserDetails></UserDetails>
+          <div className="text-3xl font-serif p-2">Welcome,{user}</div>
+          <UserDetails></UserDetails>
         </div>
         <form className="max-w-md mx-auto mt-5 b" onSubmit={handleSubmit(onSubmit)}>
           <div className='flex flex-col md:flex-row items-center gap-5'>
@@ -162,9 +158,9 @@ export default function Home() {
           </div>
         </div>
         <div className='flex justify-center gap-4'>
-       <button disabled={currentpage==1} onClick={()=>setcurrentpage(currentpage-1)}>Previous</button>
-       <pre>{currentpage} of {totalpages}</pre>
-       <button disabled={currentpage==totalpages} onClick={()=>setcurrentpage(currentpage+1)}>Next</button>
+          <button disabled={currentpage == 1} onClick={() => setcurrentpage(currentpage - 1)}>Previous</button>
+          <pre>{currentpage} of {totalpages}</pre>
+          <button disabled={currentpage == totalpages} onClick={() => setcurrentpage(currentpage + 1)}>Next</button>
         </div>
         <div className="text-6xl text-center">{message}</div>
       </div>

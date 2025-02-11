@@ -3,7 +3,7 @@ import { Button, Modal } from "flowbite-react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useContext } from 'react'
-import { NoteContext } from '../context/NoteContext';
+import { GlobalContext } from '../context/GlobalContext';
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
@@ -20,9 +20,9 @@ export default function AddNote() {
   const { register, handleSubmit, formState } = useForm({ resolver: yupResolver(noteSchema) });
   const [openModal, setOpenModal] = useState(false);
   const accessToken = localStorage.getItem("accessToken");
-  const { notes, setNotes } = useContext(NoteContext)
+  const { notes, setNotes } = useContext(GlobalContext)
   const [backendErrorMessage, setBackendErrorMessage] = useState("");
-  const {triggeredEvent,setTriggeredEvent} =useContext(NoteContext)
+  const {triggeredEvent,setTriggeredEvent} =useContext(GlobalContext)
 
   const addNote = async (data) => {
     console.log(data)

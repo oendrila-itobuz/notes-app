@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { Button, Modal } from "flowbite-react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-import { NoteContext } from '../context/NoteContext';
+import { GlobalContext } from '../context/GlobalContext';
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { GrEdit } from "react-icons/gr";
@@ -18,12 +18,12 @@ export const noteSchema = yup.object({
 export default function EditNote() {
   const [openModal, setOpenModal] = useState(false);
   const accessToken = localStorage.getItem("accessToken");
-  const { notes, setNotes, noteId } = useContext(NoteContext);
+  const { notes, setNotes, noteId } = useContext(GlobalContext);
   const [backendErrorMessage, setBackendErrorMessage] = useState("");
 console.log("before",noteId)
-const {triggeredEvent,setTriggeredEvent} =useContext(NoteContext)
+const {triggeredEvent,setTriggeredEvent} =useContext(GlobalContext)
 
-  const { Selectednote, setSelectedNote } = useContext(NoteContext)
+  const { Selectednote, setSelectedNote } = useContext(GlobalContext)
 
   const { register, handleSubmit, formState: { errors }, setValue } = useForm({
     resolver: yupResolver(noteSchema),

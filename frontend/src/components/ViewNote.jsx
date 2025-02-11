@@ -1,12 +1,12 @@
 import React, { useState, useContext } from 'react';
 import { Modal, Button } from "flowbite-react";
-import { NoteContext } from '../context/NoteContext';
+import { GlobalContext } from '../context/GlobalContext';
 import { GrFormView } from "react-icons/gr";
 
 export default function ViewNote() {
   const [openModal, setOpenModal] = useState(false);
-  const { notes, noteId } = useContext(NoteContext);
-  const { Selectednote, setSelectedNote } = useContext(NoteContext)
+  const { notes, noteId } = useContext(GlobalContext);
+  const { Selectednote, setSelectedNote } = useContext(GlobalContext)
 
   return (
     <>

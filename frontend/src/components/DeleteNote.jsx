@@ -5,16 +5,16 @@ import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { MdDelete } from "react-icons/md";
 import { useParams } from 'react-router-dom'
 import { useContext } from 'react'
-import { NoteContext } from '../context/NoteContext';
+import { GlobalContext } from '../context/GlobalContext';
 import axios from "axios";
 import Home from '../pages/Home';
 
 export default function DeleteNßote() {
       const [openModal, setOpenModal] = useState(false);
       const accessToken = localStorage.getItem("accessToken");
-      const { noteId, setNoteId } = useContext(NoteContext)
-      const { notes, setNotes } = useContext(NoteContext)
-      const {triggeredEvent,setTriggeredEvent} =useContext(NoteContext)
+      const { noteId, setNoteId } = useContext(GlobalContext)
+      const { notes, setNotes } = useContext(GlobalContext)
+      const {triggeredEvent,setTriggeredEvent} =useContext(GlobalContext)
       console.log("hii")
       console.log(noteId)
       const deleteNote = async () => {
