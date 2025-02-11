@@ -24,7 +24,7 @@ export const register = async (req, res) => {
     const token = jwt.sign(
       { id: user._id },
       process.env.secretKey,
-      { expiresIn: "10hr" }
+      { expiresIn: "3m" }
     );
     mailSend(token, email);
     user.token = token;
@@ -53,7 +53,7 @@ export const resendMail = async (req,res) =>
     const token = jwt.sign(
       { id: user._id },
       process.env.secretKey,
-      { expiresIn: "10hr" }
+      { expiresIn: "1hr" }
     );
     user.token = token;
     await user.save();

@@ -14,37 +14,40 @@ import DeleteNote from '../components/DeleteNote';
 import EditNote from '../components/EditNote';
 import ViewNote from '../components/ViewNote';
 import Footer from '../components/Footer'
+import FileUpload from '../components/FileUpload';
+import UserDetails from '../components/UserDetails';
 
 
 
 export default function Home() {
   const accessToken = localStorage.getItem("accessToken");
-  const [user, setUser] = useState("")
+  const {user, setUser} = useContext(NoteContext)
   const [message, setmessage] = useState("")
   const { register, handleSubmit, formState } = useForm({});
   const { notes, setNotes } = useContext(NoteContext)
   const { noteId, setNoteId } = useContext(NoteContext)
   const { Selectednote, setSelectedNote } = useContext(NoteContext)
+  const { totalpages, settotalpages } = useContext(NoteContext)
   const [sortBy, setsortBy] = useState(false)
   const [openModal, setOpenModal] = useState(true);
-  const [currentPage, setcutrrentPage] = useState(1)
   const [searchItem,setSearchItem] =useState("")
   const [currentpage,setcurrentpage]=useState(1)
   const [order,setorder]=useState("desc")
-
+  const {triggeredEvent,setTriggeredEvent} =useContext(NoteContext)
+  
   console.log(notes)
 
    const onSubmit = (data) =>{
-     setSearchItem(data)
+    console.log("search",data.title)
+     setSearchItem(data.title)
    }
    
    const fetchNotes=async()=>{
     const data={
       "title":searchItem,
-      "page":1,
+      "page":currentpage,
        "order":order
     }
-    console.log("biiiiiiiiiiiiiii",order)
        try{
         const res=await axios.post("http://localhost:8000/note/getAll",data,
           {
@@ -55,6 +58,10 @@ export default function Home() {
         )
         if(res.data.success){
           setNotes(res.data.message)
+          setUser(res.data.user)
+          settotalpages(res.data.totalpages)
+          console.log(res.data)
+          setTriggeredEvent(false)
         }
        }
        catch(error)
@@ -66,59 +73,22 @@ export default function Home() {
 
   useEffect(() => {
     fetchNotes()
-  }, [])
+  }, [currentpage,searchItem,order,triggeredEvent])
 
-  // const searchNotes = async (data, e) => {
-  //   console.log("data", data)
-  //   try {
-  //     console.log("hii")
-  //     const res = await axios.post("http://localhost:8000/note/filterNote", data, {
-  //       headers: {
-  //         Authorization: `Bearer ${accessToken}`,
-  //       },
-  //     });
-  //     if (res.data.success) {
-  //       console.log("hii")
-  //       setNotes(res.data.data)
-  //       setmessage("")
-  //     }
-  //     else {
-  //       setNotes([])
-  //       setmessage("No notes found")
-  //     }
-  //   } catch (error) {
-  //     console.log(error.message)
-  //   }
-  // }
   const handleNoteClick = (noteId) => {
     setNoteId(noteId);
     const note = notes.find(note => note._id === noteId);
     setSelectedNote(note);
+    console.log(Selectednote,"selectednote")
   }
-  // const sort = async (order) => {
-  //   try {
-  //     console.log("order", order)
-  //     console.log(accessToken)
-  //     const res = await axios.post("http://localhost:8000/note/sorting", order, {
-  //       headers: {
-  //         Authorization: `Bearer ${accessToken}`
-  //       },
-  //     });
-  //     if (res.data.success) {
-  //       setNotes(res.data.message)
-  //       console.log("sort", notes)
-  //     }
-  //   }
-  //   catch (error) {
-  //     console.log(error)
-  //   }
-  // }
-
   return (
     <>
       <Header redirect={{ path: "Logout" }}></Header>
       <div className='min-h-screen bg-purple-200'>
-        <div className="text-4xl font-serif p-2">Welcome, {user}</div>
+        <div className='flex justify-between p-2'>
+        <div className="text-3xl font-serif p-2">Welcome,{user}</div>
+        <UserDetails></UserDetails>
+        </div>
         <form className="max-w-md mx-auto mt-5 b" onSubmit={handleSubmit(onSubmit)}>
           <div className='flex flex-col md:flex-row items-center gap-5'>
             <div className='flex-grow' >
@@ -152,9 +122,6 @@ export default function Home() {
                     <div class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-item-1" onClick={() => {
                       setsortBy(false)
                       setorder("asc")
-                      console.log("hiiiiiiiiiiiiiii",order)
-                      fetchNotes()
-                      
                     }}>Oldest</div>
                   </div>
                 </div>}
@@ -165,7 +132,7 @@ export default function Home() {
           </div>
         </form>
         <AddNote></AddNote>
-        <div className="mx-auto container py-20 px-6">
+        <div className="mx-auto container py-10 px-6">
           {notes.length === 0 && (
             <p className="mt-4 text-center text-2xl font-serif">No notes present</p>)}
           <div className="grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
@@ -182,6 +149,7 @@ export default function Home() {
                         <p className="text-sm">{new Date(note.updatedAt).toLocaleDateString()}</p>
                         <div className='flex gap-3'>
                           <ViewNote></ViewNote>
+                          <FileUpload></FileUpload>
                           <EditNote ></EditNote>
                           <DeleteNote ></DeleteNote>
                         </div>
@@ -193,23 +161,11 @@ export default function Home() {
             })}
           </div>
         </div>
-        <ul className="list-style-none flex justify-center">
-          <li>
-            <a
-              className="pointer-events-none relative block rounded-full bg-transparent px-3 py-1.5 text-sm text-neutral-500 transition-all duration-300 dark:text-neutral-400">Previous</a>
-          </li>
-          <li>
-            <a
-              className="relative block rounded-full bg-transparent px-3 py-1.5 text-sm text-neutral-600 transition-all duration-300 hover:bg-neutral-100  dark:text-white dark:hover:bg-neutral-700 dark:hover:text-white"
-              href="#!">1</a>
-          </li>
-
-          <li>
-            <a
-              className="relative block rounded-full bg-transparent px-3 py-1.5 text-sm text-neutral-600 transition-all duration-300 hover:bg-neutral-100 dark:text-white dark:hover:bg-neutral-700 dark:hover:text-white"
-              href="#!">Next</a>
-          </li>
-        </ul>
+        <div className='flex justify-center gap-4'>
+       <button disabled={currentpage==1} onClick={()=>setcurrentpage(currentpage-1)}>Previous</button>
+       <pre>{currentpage} of {totalpages}</pre>
+       <button disabled={currentpage==totalpages} onClick={()=>setcurrentpage(currentpage+1)}>Next</button>
+        </div>
         <div className="text-6xl text-center">{message}</div>
       </div>
       <Footer></Footer>

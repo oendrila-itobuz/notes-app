@@ -8,7 +8,7 @@ import Header from "../components/Header.jsx";
 import Footer from "../components/Footer.jsx";
 import coverImage from '../assets/images/coverImage.jpg'
 import { ToastContainer, toast } from 'react-toastify';
-// import { UserContext } from "../context/UserContext.jsx";
+import { NoteContext } from "../context/NoteContext.jsx";
 
 
 const loginSchema = yup.object({
@@ -21,16 +21,19 @@ const Login = () => {
   const { register, handleSubmit, formState } = useForm({
     resolver: yupResolver(loginSchema),
   });
-  // const { setisLoggedIn } = useContext(UserContext);
+  const { loggedIn,setLoggedIn } = useContext(NoteContext);
 
   const onSubmit = async (data,e) => {
     try {
       const res = await axios.post("http://localhost:8000/user/login", data);
       console.log(res)
+      console.log("loginstatus" ,setLoggedIn)
       if (res.data.success) {
         localStorage.setItem("accessToken", res.data.accessToken); 
         localStorage.setItem("refreshToken", res.data.refreshToken); 
-        // setisLoggedIn(res.data.user)
+        setLoggedIn("true")
+        console.log("loginstatus" ,loggedIn)
+        localStorage.setItem("loginStatus",loggedIn)
         navigate("/home"); 
       } else {
         toast.error(res.data.message || "Login failed. Please try again.");

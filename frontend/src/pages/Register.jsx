@@ -46,6 +46,9 @@ const Register = () => {
       toast.error(error.response?.data?.message || "An unexpected error occurred.");
     }
   };
+  const handleResendMail = ()=>{
+    navigate('/resendMail')
+  }
 
   return (
     <>
@@ -100,11 +103,14 @@ const Register = () => {
                 {formState.errors.password?.message}
               </p>
             </div>
-            <div className="mt-8">
+            <div className="mt-4">
               <button className="bg-blue-700 text-white font-bold py-2 px-4 w-full rounded hover:bg-blue-600">
                 Register
               </button>
             </div>
+            <div className="mt-3 text-center">
+            <a className="text-gray-700 self-center text-xl font-serif px-3 py-1 border border-gray-700 rounded-md transition-all hover:border-[#8B0000] hover:text-[#8B0000]" onClick={handleResendMail} >Resend Verification link </a>
+          </div>
           </div>
         </div>
       </div>

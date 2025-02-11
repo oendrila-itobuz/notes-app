@@ -14,6 +14,7 @@ export default function DeleteNßote() {
       const accessToken = localStorage.getItem("accessToken");
       const { noteId, setNoteId } = useContext(NoteContext)
       const { notes, setNotes } = useContext(NoteContext)
+      const {triggeredEvent,setTriggeredEvent} =useContext(NoteContext)
       console.log("hii")
       console.log(noteId)
       const deleteNote = async () => {
@@ -29,6 +30,7 @@ export default function DeleteNßote() {
             const updatedNotes = notes.filter(note => note._id !== noteId);
             setNotes(updatedNotes)
             console.log(notes)
+            setTriggeredEvent(true)
           }
           else {
           }

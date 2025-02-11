@@ -22,6 +22,7 @@ export default function AddNote() {
   const accessToken = localStorage.getItem("accessToken");
   const { notes, setNotes } = useContext(NoteContext)
   const [backendErrorMessage, setBackendErrorMessage] = useState("");
+  const {triggeredEvent,setTriggeredEvent} =useContext(NoteContext)
 
   const addNote = async (data) => {
     console.log(data)
@@ -40,6 +41,7 @@ export default function AddNote() {
         console.log(res.data.data)
         setNotes([...notes, res.data.data[0]]);
         console.log(notes)
+        setTriggeredEvent(true)
         setOpenModal(false);
       }
       else {

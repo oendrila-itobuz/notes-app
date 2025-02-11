@@ -7,10 +7,15 @@ function NoteProvider(props) {
 
   const [notes, setNotes] = useState([ ])
   const [noteId,setNoteId] = useState()
-   const [Selectednote, setSelectedNote ] = useState({})
+  const [Selectednote, setSelectedNote ] = useState({})
+  const [loggedIn,setLoggedIn] = useState("false")
+  const [user, setUser] = useState("")
+  localStorage.setItem("loginStatus",loggedIn)
+  const [triggeredEvent,setTriggeredEvent] =useState("false")
+  const [totalpages,settotalpages] =useState("1")
   return <>
 
-    <NoteContext.Provider value={{ notes, setNotes, setNoteId, noteId ,Selectednote,setSelectedNote}}>
+    <NoteContext.Provider value={{ notes, setNotes, setNoteId, noteId ,Selectednote,setSelectedNote,loggedIn,setLoggedIn,triggeredEvent,setTriggeredEvent,user,setUser,totalpages,settotalpages}}>
 
       {props.children}
 

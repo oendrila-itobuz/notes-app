@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from "axios";
 import logo from '../assets/images/logo.svg'
+import { NoteContext } from '../context/NoteContext';
 
 export default function Header({ redirect }) {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ export default function Header({ redirect }) {
   const handlechange = async () => {
     if (redirect.path === 'Logout') {
       const accessToken = localStorage.getItem("accessToken");
+      const { loggedIn,setLoggedIn } = useContext(NoteContext);
       try {
         const res = await axios.get("http://localhost:8000/user/logout", {
           headers: {
@@ -20,6 +22,10 @@ export default function Header({ redirect }) {
           localStorage.removeItem("accessToken");
           localStorage.removeItem("refreshToken");
           toast.success("Logged out successfully!");
+          setLoggedIn("false")
+          console.log("logout",loggedIn);
+          localStorage.setItem("loginStatus",loggedIn)
+          
           navigate("/login");
         }
       }

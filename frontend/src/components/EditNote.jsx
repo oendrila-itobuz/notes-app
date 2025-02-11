@@ -21,6 +21,7 @@ export default function EditNote() {
   const { notes, setNotes, noteId } = useContext(NoteContext);
   const [backendErrorMessage, setBackendErrorMessage] = useState("");
 console.log("before",noteId)
+const {triggeredEvent,setTriggeredEvent} =useContext(NoteContext)
 
   const { Selectednote, setSelectedNote } = useContext(NoteContext)
 
@@ -51,6 +52,7 @@ console.log("before",noteId)
 
         setNotes(updatedNotes); 
         setOpenModal(false);
+        setTriggeredEvent(true)
       } else {
         setBackendErrorMessage(res.data.message);
       }

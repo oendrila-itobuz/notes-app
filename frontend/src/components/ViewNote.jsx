@@ -8,9 +8,6 @@ export default function ViewNote() {
   const { notes, noteId } = useContext(NoteContext);
   const { Selectednote, setSelectedNote } = useContext(NoteContext)
 
-  // Function to Open Modal and Set Note Data
-
-
   return (
     <>
       <GrFormView size={35} onClick={()=>{setOpenModal(true)}} />
@@ -21,6 +18,7 @@ export default function ViewNote() {
             <div className="p-6 bg-white rounded-lg max-w-md mx-auto">
               <h3 className="text-lg font-semibold mb-2">{Selectednote.title}</h3>
               <p className="text-gray-700">{Selectednote.description}</p>
+              <img src={Selectednote.file}></img>
               <p className="text-xs text-gray-500 mt-4">Last updated: {new Date(Selectednote.updatedAt).toLocaleDateString()}</p>
             </div>
           

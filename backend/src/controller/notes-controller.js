@@ -293,10 +293,15 @@ export const allChecks = async(req,res)=>
   const { title,page,order } = req.body
   const offset = (page - 1) * limit;
   try{
-  const notes = await noteSchema.find({ userId: req.userId , title:{"$regex":title,$options:'i'}}).sort({ updatedAt: order, title: order }).skip(offset).limit(limit) 
+  const total =await noteSchema.countDocuments({userId:req.userId})
+  const notes = await noteSchema.find({ userId: req.userId , title:{"$regex":title,$options:'i'}}).sort({ updatedAt: order, title: order }).skip(offset).limit(limit)
+  const user = await userSchema.findById({ _id: req.userId }) 
+  const totalpages=Math.ceil(total/limit)
   return res.status(200).json({
     success: true,
     message: notes,
+    user:user.userName,
+    totalpages:totalpages
   })
 }
 catch (error) {

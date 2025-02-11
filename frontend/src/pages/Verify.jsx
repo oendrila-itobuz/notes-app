@@ -18,6 +18,7 @@ const Verify = () => {
       setMessage(res.data.message);
       setTimeout(() => navigate("/login"), 3000);
     } catch (err) {
+      setMessage(err.response?.data?.message);
       console.log(err)
     }
   };
