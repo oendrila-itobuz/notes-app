@@ -16,6 +16,7 @@ const userSchema = yup.object({
     .min(5, "userName must be at least 5 characters")
     .max(20, "userName must be at most 20 characters"),
   email: yup.string().email("The email is not a valid one").required(),
+  role:yup.string().required(),
   password: yup
     .string()
     .min(8, "Password must be at least 8 characters")
@@ -49,6 +50,11 @@ const Register = () => {
   const handleResendMail = ()=>{
     navigate('/resendMail')
   }
+  const options = [
+    {value:'null' ,label:'Select the type of role'},
+    { value: 'admin', label: 'Admin' },
+    { value: 'user', label: 'User' },
+];
 
   return (
     <>
@@ -89,7 +95,17 @@ const Register = () => {
               <p className="text-xs text-red-600 font-semibold h-6">
                 {formState.errors.email?.message}
               </p>
-
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+               Role
+              </label>
+              <select name="role" id="role" className="border border-gray-300 rounded py-2 px-4 block w-full focus:outline-2 focus:outline-blue-700" {...register("role")}>
+              <option value="">--! Select Your Role !--</option>
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+              </select>
+              <p className="text-xs text-red-600 font-semibold h-6">
+                {formState.errors.role?.message}
+              </p>
               <label className="text-gray-700 text-sm font-bold mb-2">
                 Password
               </label>

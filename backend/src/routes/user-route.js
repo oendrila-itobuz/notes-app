@@ -1,5 +1,5 @@
 import express from 'express';
-import { register, login, logout, regenerate, resendMail, attachFile, getUser } from '../controller/user-controller.js';
+import { register, login, logout, regenerate, resendMail, attachFile, getUser, getAllUser } from '../controller/user-controller.js';
 import { verification } from '../middleware/registration-token-verifier.js';
 import { hasToken } from '../middleware/hasToken.js';
 import { validateUser, userSchema } from '../validators/user-details-verifier.js';
@@ -15,5 +15,6 @@ route.get('/regenerateToken', regenerate) //regeneration of access token
 route.post('/resendMail', resendMail) //resend mail for verification(if registration token expires)
 route.post('/profileUpload',hasToken,upload.single('image'), attachFile)
 route.get('/getUser',hasToken,getUser)
+route.post('/getAllUser',hasToken,getAllUser)
 
 export default route;

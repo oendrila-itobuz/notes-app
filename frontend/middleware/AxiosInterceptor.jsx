@@ -43,8 +43,8 @@ userInstance.interceptors.response.use(
               }
               });
               if (response) {
-                  localStorage.setItem('accessToken', response.data.accessToken);
-                  originalRequest.headers['Authorization'] = `Bearer ${response.data.accessToken}`;
+                  localStorage.setItem('accessToken', response.data.token);
+                  originalRequest.headers['Authorization'] = `Bearer ${response.data.token}`;
                   return userInstance(originalRequest);
               }
           } catch (error) {

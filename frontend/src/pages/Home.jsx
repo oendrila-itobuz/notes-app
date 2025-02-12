@@ -16,7 +16,8 @@ import ViewNote from '../components/ViewNote';
 import Footer from '../components/Footer'
 import FileUpload from '../components/FileUpload';
 import UserDetails from '../components/UserDetails';
-import { notesInstance } from '../../middleware/AxiosInterceptor';
+import { notesInstance, userInstance } from '../../middleware/AxiosInterceptor';
+import GetAllUsers from '../components/Admin/GetAllUsers';
 
 
 
@@ -34,13 +35,29 @@ export default function Home() {
   const [currentpage, setcurrentpage] = useState(1)
   const [order, setorder] = useState("desc")
   const { triggeredEvent, setTriggeredEvent } = useContext(GlobalContext)
-
+  const [userRole,setUserRole]=useState("")
   console.log(notes)
 
   const onSubmit = (data) => {
     setSearchItem(data.title)
   }
-
+  const getUser = async() =>{
+    try {
+      const res = await userInstance.get('http://localhost:8000/user/getUser',{
+  });
+      console.log(res)
+      if(res.data.success)
+      {
+          setUserRole(res.data.data.role)
+      }}
+      catch(error)
+      {
+        console.log(error)
+      }
+  }
+  useEffect(() => {
+    getUser()
+  }, [])
   const fetchNotes = async () => {
     const data = {
       "title": searchItem,
@@ -78,8 +95,11 @@ export default function Home() {
       <Header redirect={{ path: "Logout" }}></Header>
       <div className='min-h-screen bg-purple-200'>
         <div className='flex justify-between p-2'>
-          <div className="text-3xl font-serif p-2">Welcome,{user}</div>
+          <div className="text-2xl font-serif p-2">Welcome,{user}</div>
+          <div className='flex items-center gap-3'> 
+          {(userRole==="admin")&& <GetAllUsers></GetAllUsers>}
           <UserDetails></UserDetails>
+          </div>
         </div>
         <form className="max-w-md mx-auto mt-5 b" onSubmit={handleSubmit(onSubmit)}>
           <div className='flex flex-col md:flex-row items-center gap-5'>

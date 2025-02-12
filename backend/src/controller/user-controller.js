@@ -10,7 +10,7 @@ dotenv.config();
 
 export const register = async (req, res) => {
   try {
-    const { userName, email, password } = req.body;
+    const { userName, email, password ,role} = req.body;
     const existing = await userSchema.findOne({ email: email });
     if (existing) {
       return res.status(401).json({
@@ -20,7 +20,7 @@ export const register = async (req, res) => {
     }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    const user = await userSchema.create({ userName, email, password: hashedPassword });
+    const user = await userSchema.create({ userName, email, password: hashedPassword , role:role});
     const token = jwt.sign(
       { id: user._id },
       process.env.secretKey,
@@ -266,6 +266,43 @@ export const getUser = async (req, res) => {
     })
   }
   catch (error) {
+    res.status(500).json({
+      message: error.message
+    })
+  }
+}
+//get all user (for admin)
+
+export const getAllUser=async(req,res) => {
+  try{
+    const user = await userSchema.findById({_id: req.userId})
+    const users=await userSchema.find({role:"user"})
+    if(!user)
+    {
+      {
+        return res.status(401).json({ 
+          success:false,
+          error: 'User does not exist' ,
+        });
+      }
+    }
+    else if(user.role!=="admin")
+    {
+      return res.status(401).json({ 
+        success:false,
+        error: 'Unauthorized Access' ,
+      });
+    }
+    else{
+      res.status(200).json({
+        success: true,
+        message: "Users Retrieved",
+        data: users
+      })
+    }
+  }
+  catch(error)
+  {
     res.status(500).json({
       message: error.message
     })
