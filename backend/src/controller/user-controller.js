@@ -10,7 +10,7 @@ dotenv.config();
 
 export const register = async (req, res) => {
   try {
-    const { userName, email, password ,role} = req.body;
+    const { userName, email, password} = req.body;
     const existing = await userSchema.findOne({ email: email });
     if (existing) {
       return res.status(401).json({
@@ -20,7 +20,7 @@ export const register = async (req, res) => {
     }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    const user = await userSchema.create({ userName, email, password: hashedPassword , role:role});
+    const user = await userSchema.create({ userName, email, password: hashedPassword});
     const token = jwt.sign(
       { id: user._id },
       process.env.secretKey,
@@ -110,14 +110,16 @@ export const login = async (req, res) => {
         }
         const accessToken = jwt.sign(
           {
-            id: user._id
+            id: user._id,
+            role:user.role
           },
           process.env.secretKey,
           { expiresIn: "10s" }
         );
         const refreshToken = jwt.sign(
           {
-            id: user._id
+            id: user._id,
+            role:user.role
           },
           process.env.secretKey,
           { expiresIn: "30days" }
@@ -204,7 +206,8 @@ export const regenerate = async (req, res) => {
           if (existing) {
             const accessToken = jwt.sign(
               {
-                id: user._id
+                id: user._id,
+                role:user.role
               },
               process.env.secretKey,
               { expiresIn: "1h" }

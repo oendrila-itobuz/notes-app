@@ -27,7 +27,7 @@ export const hasToken = async (req, res, next) => {
             });
         }
         else {
-          const { id } = decoded;
+          const { id ,role } = decoded;
           const user = await userSchema.findById(id);
           if (!user) {
             return res.status(404).json({
@@ -37,7 +37,8 @@ export const hasToken = async (req, res, next) => {
           }
           const existing = await sessionSchema.findOne({ userId: id });
           if (existing) {
-            req.userId = id
+            req.userId = id,
+            req.role = role
             next()
           }
           else {

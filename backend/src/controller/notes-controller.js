@@ -11,7 +11,8 @@ export const addNote = async (req, res) => {
         message: "This title Already Exists",
       });
     }
-    const data = await noteSchema.create({ title: title, description: description, userId: req.userId });
+    const user =await userSchema.findById({_id:req.userId})
+    const data = await noteSchema.create({ title: title, description: description, userId: req.userId,author:user.userName});
     if (data) {
       return res.status(200).json({
         success: true,
@@ -293,16 +294,27 @@ export const allChecks = async(req,res)=>
   const { title,page,order } = req.body
   const offset = (page - 1) * limit;
   try{
-  const total =await noteSchema.countDocuments({userId:req.userId})
-  const notes = await noteSchema.find({ userId: req.userId , title:{"$regex":title,$options:'i'}}).sort({ updatedAt: order, title: order }).skip(offset).limit(limit)
+  const total =await noteSchema.countDocuments({})
   const user = await userSchema.findById({ _id: req.userId }) 
   const totalpages=Math.ceil(total/limit)
+  if(req.role==="admin")
+    {
+      const notes = await noteSchema.find({author:{"$regex":title,$options:'i'}}).sort({ updatedAt: order, title: order }).skip(offset).limit(limit)
+      return res.status(200).json({
+        success: true,
+        message: notes,
+        user:user.userName,
+        totalpages:totalpages
+      })
+    }
+    else{
+      const notes = await noteSchema.find({ userId: req.userId , title:{"$regex":title,$options:'i'}}).sort({ updatedAt: order, title: order }).skip(offset).limit(limit)
   return res.status(200).json({
     success: true,
     message: notes,
     user:user.userName,
     totalpages:totalpages
-  })
+  })}
 }
 catch (error) {
   res.status(500).json({

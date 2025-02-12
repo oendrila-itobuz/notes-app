@@ -18,6 +18,10 @@ const noteSchema = new mongoose.Schema({
     type:String,
     default:""
   },
+  author:{
+    type:String,
+    default:""
+  },
   updatedAt: {
     type: Date,
     default: Date.now
