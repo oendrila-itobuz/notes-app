@@ -6,23 +6,21 @@ import { GlobalContext } from '../context/GlobalContext';
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { GrEdit } from "react-icons/gr";
+import { notesInstance } from '../../middleware/AxiosInterceptor';
 
 export const noteSchema = yup.object({
   title: yup.string().trim()
-      .min(5, 'Title must be at least 5 characters')
-      .max(20, 'Title must be at most 20 characters'),
+    .min(5, 'Title must be at least 5 characters')
+    .max(20, 'Title must be at most 20 characters'),
   description: yup.string().trim()
-      .min(20, 'Description must be at least 20 characters')
+    .min(20, 'Description must be at least 20 characters')
 });
 
 export default function EditNote() {
   const [openModal, setOpenModal] = useState(false);
-  const accessToken = localStorage.getItem("accessToken");
   const { notes, setNotes, noteId } = useContext(GlobalContext);
   const [backendErrorMessage, setBackendErrorMessage] = useState("");
-console.log("before",noteId)
-const {triggeredEvent,setTriggeredEvent} =useContext(GlobalContext)
-
+  const { triggeredEvent, setTriggeredEvent } = useContext(GlobalContext)
   const { Selectednote, setSelectedNote } = useContext(GlobalContext)
 
   const { register, handleSubmit, formState: { errors }, setValue } = useForm({
@@ -30,46 +28,44 @@ const {triggeredEvent,setTriggeredEvent} =useContext(GlobalContext)
   });
   setValue("title", Selectednote.title);
   setValue("description", Selectednote.description);
-  
+
   const openEditModal = async () => {
     setOpenModal(true);
   };
 
- 
+
   const editNote = async (data) => {
     try {
-      const res = await axios.put(
+      const res = await notesInstance.put(
         `http://localhost:8000/note/update/${noteId}`,
         data,
-        { headers: { Authorization: `Bearer ${accessToken}` } }
       );
 
       if (res.data.success) {
-       
+
         const updatedNotes = notes.map(note =>
           note._id === noteId ? { ...note, title: data.title, description: data.description } : note
         );
 
-        setNotes(updatedNotes); 
+        setNotes(updatedNotes);
         setOpenModal(false);
         setTriggeredEvent(true)
       } else {
         setBackendErrorMessage(res.data.message);
       }
     } catch (error) {
-      setBackendErrorMessage(error.response?.data?.message || "An error occurred");
-      console.error(error.message);
+      setBackendErrorMessage(error.response?.data?.message);
+      console.log(error.message);
     }
   };
 
   return (
     <>
       <GrEdit size={35} onClick={openEditModal} />
-      
       <Modal show={openModal} onClose={() => setOpenModal(false)}>
         <Modal.Header>Edit Your Note</Modal.Header>
         <p className="text-xs text-red-600 font-semibold h-6">{backendErrorMessage}</p>
-        
+
         <Modal.Body>
           <form>
             <div className="p-6 bg-white rounded-lg max-w-md mx-auto">

@@ -6,6 +6,7 @@ import { useContext } from 'react'
 import { GlobalContext } from '../context/GlobalContext';
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { notesInstance } from '../../middleware/AxiosInterceptor';
 
 export const noteSchema = yup.object({
 
@@ -19,28 +20,18 @@ export const noteSchema = yup.object({
 export default function AddNote() {
   const { register, handleSubmit, formState } = useForm({ resolver: yupResolver(noteSchema) });
   const [openModal, setOpenModal] = useState(false);
-  const accessToken = localStorage.getItem("accessToken");
   const { notes, setNotes } = useContext(GlobalContext)
   const [backendErrorMessage, setBackendErrorMessage] = useState("");
-  const {triggeredEvent,setTriggeredEvent} =useContext(GlobalContext)
+  const { triggeredEvent, setTriggeredEvent } = useContext(GlobalContext)
 
   const addNote = async (data) => {
-    console.log(data)
-    console.log("hii")
     try {
-      const res = await axios.post(
+      const res = await notesInstance.post(
         "http://localhost:8000/note/addNote",
-        data,
-        { headers: { Authorization: `Bearer ${accessToken}` } }
+        data
       );
-      console.log(res.data)
       if (res.data.success) {
-        console.log("hilooo");
-
-        console.log(res.data.data[0])
-        console.log(res.data.data)
         setNotes([...notes, res.data.data[0]]);
-        console.log(notes)
         setTriggeredEvent(true)
         setOpenModal(false);
       }
@@ -103,9 +94,7 @@ export default function AddNote() {
               </Button>
             </Modal.Footer>
           </form>
-
         </Modal>
-
       </div>
     </>
   )

@@ -16,7 +16,7 @@ export const hasToken = async (req, res, next) => {
       jwt.verify(token, process.env.secretKey, async (err, decoded) => {
         if (err) {
           if (err.name === "TokenExpiredError")
-            return res.status(400).json({
+            return res.status(403).json({
               success: false,
               message: "The access token has expired use the refresh token to regenerate it ",
             });

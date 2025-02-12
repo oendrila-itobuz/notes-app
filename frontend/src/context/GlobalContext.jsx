@@ -11,9 +11,10 @@ function GlobalProvider(props) {
   const [user, setUser] = useState("")
   const [triggeredEvent, setTriggeredEvent] = useState("false")
   const [totalpages, settotalpages] = useState("1")
+  
   return <>
 
-    <GlobalContext.Provider value={{ notes, setNotes, setNoteId, noteId, Selectednote, setSelectedNote, triggeredEvent, setTriggeredEvent, user, setUser, totalpages, settotalpages }}>
+    <GlobalContext.Provider value={{ notes, setNotes, setNoteId, noteId, Selectednote, setSelectedNote, triggeredEvent, setTriggeredEvent, user, setUser, totalpages, settotalpages}}>
 
       {props.children}
 

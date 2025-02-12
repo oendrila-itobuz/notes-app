@@ -89,7 +89,7 @@ export const login = async (req, res) => {
     if (!user) {
       return res.status(401).json({ 
         success:false,
-        error: 'Unauthorized Access' 
+        error: 'Unauthorized Access' ,
       });
     }
     else {
@@ -113,7 +113,7 @@ export const login = async (req, res) => {
             id: user._id
           },
           process.env.secretKey,
-          { expiresIn: "8hr" }
+          { expiresIn: "10s" }
         );
         const refreshToken = jwt.sign(
           {
@@ -126,7 +126,8 @@ export const login = async (req, res) => {
           success:true,
           message: "User logged In",
           accessToken: accessToken,
-          refreshToken: refreshToken
+          refreshToken: refreshToken,
+          data:user
         })
       }
       else {
@@ -246,6 +247,22 @@ export const attachFile = async (req, res) => {
       success: true,
       message: "Profile Picture Added Successfully",
       data: data
+    })
+  }
+  catch (error) {
+    res.status(500).json({
+      message: error.message
+    })
+  }
+}
+//get-user
+export const getUser = async (req, res) => {
+  try {
+    const user = await userSchema.findById({_id: req.userId})
+    res.status(200).json({
+      success: true,
+      message: "User Retrieved",
+      data: user
     })
   }
   catch (error) {

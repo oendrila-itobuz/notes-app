@@ -1,23 +1,40 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext,useEffect } from 'react';
 import axios from 'axios';
 import { Modal, Button } from "flowbite-react";
 import { GlobalContext } from '../context/GlobalContext';
 import { FaUser } from "react-icons/fa6";
+import { userInstance } from '../../middleware/AxiosInterceptor';
 
 export default function UserDetails() {
   const accessToken = localStorage.getItem("accessToken");
   const [openModal, setOpenModal] = useState(false);
   const { user } = useContext(GlobalContext);
-  const [profilePic, setProfilePic] = useState("https://data.artofproblemsolving.com/images/people/rlemon309x309.png");
+  const [profilePic, setProfilePic] = useState("");
+ 
+  const getUser = async() =>{
+    try {
+      const res = await userInstance.get('http://localhost:8000/user/getUser',{
+  });
+      console.log(res)
+      if(res.data.success)
+      {
+          setProfilePic(res.data.data.file)
+      }}
+      catch(error)
+      {
+        console.log(error)
+      }
+  }
+  useEffect(() => {
+    getUser()
+  }, [])
 
-  const handleFileUpload = async (event) => {
+  const handleFileUpload = async (event) => {  
     const data= new FormData();
     data.append('image', event.target.files[0]);
-    console.log(data)
     try {
-      const res = await axios.post('http://localhost:8000/user/profileUpload',data, {
+      const res = await userInstance.post('http://localhost:8000/user/profileUpload',data, {
         headers: { 
-          Authorization: `Bearer ${accessToken}`,
           'Content-Type': 'multipart/form-data' },
       });
       
@@ -31,8 +48,7 @@ export default function UserDetails() {
 
   return (
     <>
-      <FaUser size={35} onClick={() => setOpenModal(true)} />
-      
+      <FaUser size={35} onClick={() => setOpenModal(true)} />      
       <Modal show={openModal} onClose={() => setOpenModal(false)}>
         <Modal.Header>User Details</Modal.Header>
         <Modal.Body>

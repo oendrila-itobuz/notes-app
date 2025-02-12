@@ -5,6 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { GlobalContext } from '../context/GlobalContext';
 import logo from '../assets/images/logo.svg'
+import { userInstance } from '../../middleware/AxiosInterceptor';
 
 
 export default function Header({ redirect }) { //(taking login and logout as props)
@@ -12,12 +13,8 @@ export default function Header({ redirect }) { //(taking login and logout as pro
 
   const handlechange = async () => {
     if (redirect.path === 'Logout') {
-      const accessToken = localStorage.getItem("accessToken");
       try {
-        const res = await axios.get("http://localhost:8000/user/logout", {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
+        const res = await userInstance.get("http://localhost:8000/user/logout", {
         });
         if (res.status) {
           localStorage.removeItem("accessToken");

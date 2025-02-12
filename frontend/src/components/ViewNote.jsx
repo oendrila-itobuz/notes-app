@@ -5,7 +5,6 @@ import { GrFormView } from "react-icons/gr";
 
 export default function ViewNote() {
   const [openModal, setOpenModal] = useState(false);
-  const { notes, noteId } = useContext(GlobalContext);
   const { Selectednote, setSelectedNote } = useContext(GlobalContext)
 
   return (

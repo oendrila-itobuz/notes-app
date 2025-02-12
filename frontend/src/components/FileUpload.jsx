@@ -3,9 +3,9 @@ import { MdFileUpload } from "react-icons/md";
 import { Modal } from "flowbite-react";
 import { GlobalContext } from "../context/GlobalContext";
 import axios from "axios";
+import { notesInstance } from "../../middleware/AxiosInterceptor";
 
 export default function FileUpload() {
-  const accessToken = localStorage.getItem("accessToken");
   const [openModal, setOpenModal] = useState(false);
   const [filepresent, setfilepresent] = useState(false);
   const { Selectednote, setSelectedNote } = useContext(GlobalContext);
@@ -15,13 +15,11 @@ export default function FileUpload() {
     try {
       const data = new FormData();
       data.append('image', event.target.files[0]);
-      console.log(data)
-      const res = await axios.post(
+      const res = await notesInstance.post(
         `http://localhost:8000/note/uploadFile/${Selectednote._id}`,
         data,
         {
           headers: {
-            Authorization: `Bearer ${accessToken}`,
             "Content-Type": "multipart/form-data",
           },
         }
@@ -30,8 +28,7 @@ export default function FileUpload() {
       if (res.data.success) {
         setTriggeredEvent(true);
         setfilepresent(true);
-        console.log(setfilepresent)
-        setSelectedNote(res.data.data)      
+        setSelectedNote(res.data.data)
       }
     } catch (error) {
       console.log(error);

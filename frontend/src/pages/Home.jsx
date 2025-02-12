@@ -16,6 +16,7 @@ import ViewNote from '../components/ViewNote';
 import Footer from '../components/Footer'
 import FileUpload from '../components/FileUpload';
 import UserDetails from '../components/UserDetails';
+import { notesInstance } from '../../middleware/AxiosInterceptor';
 
 
 
@@ -47,12 +48,7 @@ export default function Home() {
       "order": order
     }
     try {
-      const res = await axios.post("http://localhost:8000/note/getAll", data,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`
-          }
-        }
+      const res = await notesInstance.post("http://localhost:8000/note/getAll", data
       )
       if (res.data.success) {
         setNotes(res.data.message)
@@ -157,11 +153,12 @@ export default function Home() {
             })}
           </div>
         </div>
+        {notes.length !== 0 && (
         <div className='flex justify-center gap-4'>
           <button disabled={currentpage == 1} onClick={() => setcurrentpage(currentpage - 1)}>Previous</button>
           <pre>{currentpage} of {totalpages}</pre>
           <button disabled={currentpage == totalpages} onClick={() => setcurrentpage(currentpage + 1)}>Next</button>
-        </div>
+        </div>)}
         <div className="text-6xl text-center">{message}</div>
       </div>
       <Footer></Footer>

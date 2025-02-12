@@ -20,7 +20,6 @@ export default function VerifyMail() {
     const onSubmit = async (data,e) => {
       try {
         const res = await axios.post("http://localhost:8000/user/resendMail", data);
-        console.log(res)
         if (res.data.success) {
           toast.success("Mail Sent! Please check your email for the verification link.")
           setTimeout(() => {
