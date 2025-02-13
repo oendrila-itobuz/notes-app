@@ -10,6 +10,7 @@ import Verify from './pages/Verify.jsx';
 import VerifyMail from './pages/VerifyMail.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import AllUsers from './pages/admin/AllUsers.jsx';
+import Error from './pages/Error.jsx';
 
 
 function App() {
@@ -17,13 +18,15 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
+
           <Route path='/' element={<Cover />} />
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
           <Route path='/home' element={<ProtectedRoute><Home /></ProtectedRoute>} />
-          <Route path='/allUsers' element={<ProtectedRoute><AllUsers></AllUsers></ProtectedRoute>}/>
+          <Route path='/allUsers' element={<ProtectedRoute><AllUsers/></ProtectedRoute>}/>
           <Route path='/resendMail' element={<VerifyMail/>}/>
           <Route path='/user/verify/:token' element={<Verify/>}/>
+          <Route path="*" element={<Error/>} />
         </Routes>
       </BrowserRouter>
     </>

@@ -17,4 +17,4 @@ app.use(cors());
 app.use(express.json());
 app.use("/user", route)
 app.use("/note", routeNote)
-app.use("/uploads",express.static("uploads"))
+app.use("/uploads", express.static("uploads"))

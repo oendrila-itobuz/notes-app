@@ -9,7 +9,7 @@ const dummyUser = async (num) => {
     const userName = faker.internet.username();
     let password = `user_${i}@TY`;
     const salt = await bcrypt.genSalt(10);
-    
+
     const email = `oendrila+${i}@itobuz.com`;
     const verified = true;
 
@@ -23,12 +23,12 @@ const dummyUser = async (num) => {
       verified,
     });
   }
-  try{
-     await userSchema.insertMany(users)
-     console.log(`${num} users have been inserted in the userSchema`)
+  try {
+    await userSchema.insertMany(users)
+    console.log(`${num} users have been inserted in the userSchema`)
   }
-  catch(error){
-     console.log(error)
+  catch (error) {
+    console.log(error)
   }
 };
 

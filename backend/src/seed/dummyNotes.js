@@ -10,9 +10,9 @@ const dummyNotes = async (num) => {
   for (let i = 1; i <= num; i++) {
     const title = faker.internet.username();
     const description = faker.internet.username();
-    const userId = allUsers[Math.floor(Math.random()*allUsers.length)]._id
-    let author = await (userSchema.findById({_id:userId}))
-    author=author.userName
+    const userId = allUsers[Math.floor(Math.random() * allUsers.length)]._id
+    let author = await (userSchema.findById({ _id: userId }))
+    author = author.userName
     notes.push({
       title,
       description,
@@ -20,12 +20,12 @@ const dummyNotes = async (num) => {
       author
     });
   }
-  try{
-     await noteSchema.insertMany(notes)
-     console.log(`${num} notes have been inserted in the userSchema`)
+  try {
+    await noteSchema.insertMany(notes)
+    console.log(`${num} notes have been inserted in the userSchema`)
   }
-  catch(error){
-     console.log(error)
+  catch (error) {
+    console.log(error)
   }
 };
 

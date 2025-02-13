@@ -15,7 +15,7 @@ route.get('/regenerateToken', regenerate) //regeneration of access token
 route.post('/resendMail', resendMail) //resend mail for verification(if registration token expires)
 route.post('/profileUpload',hasToken,upload.single('image'), attachFile)
 route.get('/getUser',hasToken,getUser)
-route.post('/getAllUser',hasToken,getAllUser)
-route.post('/deleteUser',hasToken,deleteUser)
+route.post('/getAllUser',hasToken,getAllUser) //for admin
+route.post('/deleteUser',hasToken,deleteUser) //for admin
 
 export default route;

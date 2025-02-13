@@ -1,14 +1,15 @@
-import dotenv from "dotenv/config";
+import dotenv from "dotenv";
+dotenv.config()
 import userSchema from "../models/user-schema.js";
 import jwt from 'jsonwebtoken'
+import statusCodes from "../config/constants.js";
 
 //mail verification
-
 export const verification = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({
+      return res.status(statusCodes.UNAUTHORIZED).json({
         success: false,
         message: "Authorization token is missing or invalid",
       });
@@ -17,13 +18,13 @@ export const verification = async (req, res) => {
       const token = authHeader.split(' ')[1];
       jwt.verify(token, process.env.secretKey, async (err, decoded) => {
         if (err) {
-          if (err.name === "TokenExpiredError"){            
-            return res.status(400).json({
+          if (err.name === "TokenExpiredError") {
+            return res.status(statusCodes.BAD_REQUEST).json({
               success: false,
               message: "The registration token has expired use your email to regenerate it ",
             });
           }
-          return res.status(400).json({
+          return res.status(statusCodes.FORBIDDEN).json({
             success: false,
             message: "Token verification failed, possibly expired or invalid",
           });
@@ -32,7 +33,7 @@ export const verification = async (req, res) => {
           const { id } = decoded;
           const user = await userSchema.findById(id);
           if (!user) {
-            return res.status(404).json({
+            return res.status(statusCodes.NOT_FOUND).json({
               success: false,
               message: "User not found",
             });
@@ -41,9 +42,10 @@ export const verification = async (req, res) => {
             user.token = null;
             user.verified = true;
             await user.save();
-            return res.status(200).json({
+            return res.status(statusCodes.OK).json({
               success: true,
-              message: "Email verified successfully",}
+              message: "Email verified successfully",
+            }
             )
           }
         }
@@ -51,9 +53,9 @@ export const verification = async (req, res) => {
     }
   } catch (error) {
     console.error(error);
-    return res.status(500).json({
+    return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: "Could not access",
+      message: error.message,
     });
   }
 };

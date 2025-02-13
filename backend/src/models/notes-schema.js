@@ -11,16 +11,16 @@ const noteSchema = new mongoose.Schema({
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'user', 
+    ref: 'user',
     required: true,
   },
-  file:{
-    type:String,
-    default:""
+  file: {
+    type: String,
+    default: ""
   },
-  author:{
-    type:String,
-    default:""
+  author: {
+    type: String,
+    default: ""
   },
   updatedAt: {
     type: Date,

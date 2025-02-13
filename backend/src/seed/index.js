@@ -8,7 +8,7 @@ import dummyNotes from '../seed/dummyNotes.js';
 import mongoose from 'mongoose';
 
 
-async function reset () {
+async function reset() {
     connectDB();
     await noteSchema.deleteMany();
     await userSchema.deleteMany();
@@ -17,9 +17,9 @@ async function reset () {
 }
 
 async function createDummy() {
-   await dummyUser(10)
-   await dummyNotes(10)
-   mongoose.connection.close()
+    await dummyUser(10)
+    await dummyNotes(10)
+    mongoose.connection.close()
 }
 
 await reset()

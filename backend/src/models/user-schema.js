@@ -21,13 +21,13 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null
   },
-  file:{
-    type:String,
-    default:""
+  file: {
+    type: String,
+    default: ""
   },
-  role:{
-    type:String,
-    default:"user"
+  role: {
+    type: String,
+    default: "user"
   }
 })
 

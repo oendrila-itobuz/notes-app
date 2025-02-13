@@ -1,50 +1,51 @@
 import noteSchema from "../models/notes-schema.js";
 import userSchema from "../models/user-schema.js";
-// add note
+import statusCodes from "../config/constants.js";
+
+// add note  (admin can create their own as well as notes for the user)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
 export const addNote = async (req, res) => {
   try {
-    if (req.role==="admin" && Object.keys(req.body).length===3)
-    { 
-    const { title, description,userId } = req.body;
-    const existing = await noteSchema.findOne({ title: title.trim(), userId: userId })
-    if (existing) {
-      return res.status(400).json({
-        success: false,
-        message: "This title Already Exists",
-      });
+    if (req.role === "admin" && Object.keys(req.body).length === 3) {
+      const { title, description, userId } = req.body;
+      const existing = await noteSchema.findOne({ title: title.trim(), userId: userId })
+      if (existing) {
+        return res.status(statusCodes.BAD_REQUEST).json({
+          success: false,
+          message: "This title Already Exists",
+        });
+      }
+      const user = await userSchema.findById({ _id: userId })
+      const data = await noteSchema.create({ title: title, description: description, userId: req.userId, author: user.userName });
+      if (data) {
+        return res.status(statusCodes.CREATED).json({
+          success: true,
+          message: "Note Created Success",
+          data: [data]
+        });
+      }
     }
-    const user =await userSchema.findById({_id:userId})
-    const data = await noteSchema.create({ title: title, description: description, userId: req.userId,author:user.userName});
-    if (data) {
-      return res.status(200).json({
-        success: true,
-        message: "Note Created Success",
-        data: [data]
-      });
-    }
-    }
-    else{
-      const{title,description}=req.body
-    const existing = await noteSchema.findOne({ title: title.trim(), userId: req.userId })
-    if (existing) {
-      return res.status(400).json({
-        success: false,
-        message: "This title Already Exists",
-      });
-    }
-    const user =await userSchema.findById({_id:req.userId})
-    const data = await noteSchema.create({ title: title, description: description, userId: req.userId,author:user.userName});
-    if (data) {
-      return res.status(200).json({
-        success: true,
-        message: "Note Created Success",
-        data: [data]
-      });
-    }
+    else {
+      const { title, description } = req.body
+      const existing = await noteSchema.findOne({ title: title.trim(), userId: req.userId })
+      if (existing) {
+        return res.status(statusCodes.BAD_REQUEST).json({
+          success: false,
+          message: "This title Already Exists",
+        });
+      }
+      const user = await userSchema.findById({ _id: req.userId })
+      const data = await noteSchema.create({ title: title, description: description, userId: req.userId, author: user.userName });
+      if (data) {
+        return res.status(statusCodes.OK).json({
+          success: true,
+          message: "Note Created Success",
+          data: [data]
+        });
+      }
 
-  }
+    }
   } catch (error) {
-    return res.status(500).json({
+    return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: error,
     });
@@ -57,22 +58,22 @@ export const getNote = async (req, res) => {
     const data = await noteSchema.find({ userId: req.userId })
     const user = await userSchema.findById({ _id: req.userId })
     if (data) {
-      return res.status(200).json({
+      return res.status(statusCodes.OK).json({
         success: true,
         message: "Fetched Successfully",
-        user:user.userName,
+        user: user.userName,
         data: data
       })
     }
     else {
-      return res.status(404).json({
+      return res.status(statusCodes.NOT_FOUND).json({
         success: true,
         message: "This user has no notes",
       })
     }
   }
   catch (error) {
-    res.status(500).json({
+    res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: error,
     })
@@ -85,21 +86,21 @@ export const searchNote = async (req, res) => {
     const noteId = req.params.id
     const data = await noteSchema.findOne({ userId: req.userId, _id: noteId })
     if (data) {
-      res.status(200).json({
+      res.status(statusCodes.OK).json({
         success: true,
         message: "Fetched Successfully",
         data: [{ noteId: data._id, Title: data.title, description: data.description }]
       })
     }
     else {
-      res.status(200).json({
+      res.status(statusCodes.NOT_FOUND).json({
         success: false,
         message: "No such note exists",
       })
     }
   }
   catch (error) {
-    res.status(500).json({
+    res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: error,
     })
@@ -107,7 +108,6 @@ export const searchNote = async (req, res) => {
 }
 
 //update a particular note of an user
-
 export const updateNote = async (req, res) => {
   try {
     const { title, description } = req.body
@@ -117,7 +117,7 @@ export const updateNote = async (req, res) => {
       const existing = await noteSchema.findOne({ title: title, userId: req.userId })
       console.log(existing)
       if (existing) {
-        res.status(400).json({
+        res.status(statusCodes.BAD_REQUEST).json({
           success: false,
           message: "The title already exists",
         })
@@ -127,7 +127,7 @@ export const updateNote = async (req, res) => {
         data.description = description;
         data.updatedAt = Date.now()
         await data.save();
-        res.status(200).json({
+        res.status(statusCodes.OK).json({
           success: true,
           message: "Updated Successfully",
           data: data
@@ -135,14 +135,14 @@ export const updateNote = async (req, res) => {
       }
     }
     else {
-      res.status(200).json({
+      res.status(statusCodes.NOT_FOUND).json({
         success: false,
         message: "No such note exists",
       })
     }
   }
   catch (error) {
-    res.status(500).json({
+    res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: error,
     })
@@ -150,25 +150,24 @@ export const updateNote = async (req, res) => {
 }
 
 //delete a particular note of an user
-
 export const deleteNote = async (req, res) => {
   try {
     const noteId = req.params.id
     const data = await noteSchema.findByIdAndDelete({ userId: req.userId, _id: noteId })
     if (data) {
-      res.status(200).json({
+      res.status(statusCodes.OK).json({
         success: true,
         message: "Deleted Successfully",
       })
     }
     else
-      res.status(400).json({
+      res.status(statusCodes.NOT_FOUND).json({
         success: true,
         message: "No such data found",
       })
   }
   catch (error) {
-    res.status(500).json({
+    res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: error,
     })
@@ -176,7 +175,6 @@ export const deleteNote = async (req, res) => {
 }
 
 // filter notes by title
-
 export const filterNote = async (req, res) => {
   try {
     const { title } = req.body
@@ -191,13 +189,13 @@ export const filterNote = async (req, res) => {
     })
     console.log(filteredNotes)
     if (flag === true) {
-      return res.status(200).json({
+      return res.status(statusCodes.OK).json({
         success: true,
         data: filteredNotes
       })
     }
     else {
-      return res.status(200).json({
+      return res.status(statusCodes.NOT_FOUND).json({
         success: false,
         message: "No matched title found ",
       })
@@ -221,34 +219,33 @@ export const pagination = async (req, res) => {
       .skip(offset)
       .limit(limit);
     const user = await userSchema.findById({ _id: req.userId })
-    res.status(200).json({
-      success:true,
-      user:user.userName,
-      data:notes
+    res.status(statusCodes.OK).json({
+      success: true,
+      user: user.userName,
+      data: notes
     })
   }
   catch (error) {
-    return res.status(500).json({
+    return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: error,
+      message: error.message,
     });
 
   }
 }
 
 //notes sorting based on latest updation
-
 export const sorting = async (req, res) => {
   try {
     const { order } = req.body
     const sortedDocuments = await noteSchema.find({ userId: req.userId }).sort({ updatedAt: order, title: order });
-    return res.status(200).json({
+    return res.status(statusCodes.OK).json({
       success: true,
       message: sortedDocuments,
     })
   }
   catch (error) {
-    res.status(500).json({
+    res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
       message: error
     })
   }
@@ -258,21 +255,21 @@ export const sorting = async (req, res) => {
 export const attachFile = async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).send('No file uploaded.');
+      return res.status(statusCodes.NOT_FOUND).send('No file uploaded.');
     }
     const noteId = req.params.id
     const data = await noteSchema.findOne({ _id: noteId })
     data.file = "http://localhost:8000/uploads/" + req.file.filename
     console.log(data.file)
     await data.save()
-    res.status(200).json({
+    res.status(statusCodes.OK).json({
       success: true,
       message: "Folder Added Successfully",
       data: data
     })
   }
   catch (error) {
-    res.status(500).json({
+    res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
       message: error.message
     })
   }
@@ -280,29 +277,28 @@ export const attachFile = async (req, res) => {
 
 
 //together Sorting pagination and get all notes
-
 export const getAllNotes = async (req, res) => {
   try {
     const { order } = req.body
     const data = await noteSchema.find({ userId: req.userId }).sort({ updatedAt: order, title: order })
     const user = await userSchema.findById({ _id: req.userId })
     if (data) {
-      return res.status(200).json({
+      return res.status(statusCodes.OK).json({
         success: true,
         message: "Fetched Successfully",
-        user:user.userName,
+        user: user.userName,
         data: data
       })
     }
     else {
-      return res.status(404).json({
+      return res.status(statusCodes.NOT_FOUND).json({
         success: true,
         message: "This user has no notes",
       })
     }
   }
   catch (error) {
-    res.status(500).json({
+    res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: error,
     })
@@ -310,40 +306,39 @@ export const getAllNotes = async (req, res) => {
 }
 
 // getAll sort search paginate
-
-export const allChecks = async(req,res)=>
-{
-  const limit=4
-  const { title,page,order } = req.body
+export const allChecks = async (req, res) => {
+  const limit = 4
+  const { title, page, order } = req.body
   const offset = (page - 1) * limit;
-  const total =await noteSchema.countDocuments({})
-  const totalpages=Math.ceil(total/limit)
-  try{
-  const user = await userSchema.findById({ _id: req.userId }) 
-  if(req.role==="admin")
+  const total = await noteSchema.countDocuments({})
+  const totalpages = Math.ceil(total / limit)
+  try {
+    const user = await userSchema.findById({ _id: req.userId })
+    if (req.role === "admin")  // for admin
     {
-      const notes = await noteSchema.find({author:{"$regex":title,$options:'i'}}).sort({ updatedAt: order, title: order }).skip(offset).limit(limit)
-      return res.status(200).json({
+      const notes = await noteSchema.find({ author: { "$regex": title, $options: 'i' } }).sort({ updatedAt: order, title: order }).skip(offset).limit(limit)
+      return res.status(statusCodes.OK).json({
         success: true,
         message: notes,
-        user:user.userName,
-        totalpages:totalpages
+        user: user.userName,
+        totalpages: totalpages
       })
     }
-    else{
-      const notes = await noteSchema.find({ userId: req.userId , title:{"$regex":title,$options:'i'}}).sort({ updatedAt: order, title: order }).skip(offset).limit(limit)
-      const length=await noteSchema.countDocuments({userId:req.userId})
-      const pages=Math.ceil(length/limit)
-  return res.status(200).json({
-    success: true,
-    message: notes,
-    user:user.userName,
-    totalpages:pages
-  })}
-}
-catch (error) {
-  res.status(500).json({
-    message: error.message
-  })
-}
+    else {    // for user
+      const notes = await noteSchema.find({ userId: req.userId, title: { "$regex": title, $options: 'i' } }).sort({ updatedAt: order, title: order }).skip(offset).limit(limit)
+      const length = await noteSchema.countDocuments({ userId: req.userId })
+      const pages = Math.ceil(length / limit)
+      return res.status(statusCodes.OK).json({
+        success: true,
+        message: notes,
+        user: user.userName,
+        totalpages: pages
+      })
+    }
+  }
+  catch (error) {
+    res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+      message: error.message
+    })
+  }
 }
