@@ -10,7 +10,7 @@ import axios from "axios";
 import Home from '../pages/Home';
 import { notesInstance } from '../../middleware/AxiosInterceptor';
 
-export default function DeleteNßote() {
+export default function DeleteNote() {
   const [openModal, setOpenModal] = useState(false);
   const { noteId, setNoteId } = useContext(GlobalContext)
   const { notes, setNotes } = useContext(GlobalContext)

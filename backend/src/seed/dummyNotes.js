@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker'
 import userSchema from '../models/user-schema.js';
 import noteSchema from '../models/notes-schema.js';
 import bcrypt from 'bcrypt'
+import mongoose from 'mongoose';
 
 const dummyNotes = async (num) => {
   const notes = [];
@@ -10,11 +11,13 @@ const dummyNotes = async (num) => {
     const title = faker.internet.username();
     const description = faker.internet.username();
     const userId = allUsers[Math.floor(Math.random()*allUsers.length)]._id
-
+    let author = await (userSchema.findById({_id:userId}))
+    author=author.userName
     notes.push({
       title,
       description,
       userId,
+      author
     });
   }
   try{

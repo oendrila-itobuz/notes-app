@@ -3,10 +3,11 @@ import { Button, Modal } from "flowbite-react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useContext } from 'react'
-import { GlobalContext } from '../context/GlobalContext';
+import { GlobalContext } from '../../context/GlobalContext';
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { notesInstance } from '../../middleware/AxiosInterceptor';
+import { notesInstance } from '../../../middleware/AxiosInterceptor';
+import { MdOutlineNoteAdd } from "react-icons/md";
 
 export const noteSchema = yup.object({
 
@@ -17,7 +18,7 @@ export const noteSchema = yup.object({
     .min(20, 'Description must be at least 20 characters')
 });
 
-export default function AddNote() {
+export default function AddNote(userId) {
   const { register, handleSubmit, formState } = useForm({ resolver: yupResolver(noteSchema) });
   const [openModal, setOpenModal] = useState(false);
   const { notes, setNotes } = useContext(GlobalContext)
@@ -26,6 +27,8 @@ export default function AddNote() {
 
   const addNote = async (data,e) => {
     try {
+      data.userId=userId.userId
+      console.log(data)
       const res = await notesInstance.post(
         "http://localhost:8000/note/addNote",
         data
@@ -34,7 +37,7 @@ export default function AddNote() {
         setNotes([...notes, res.data.data[0]]);
         setTriggeredEvent(true)
         setOpenModal(false);
-        e.target.reset
+        e.target.reset()
       }
       else {
         setBackendErrorMessage(res.data.message);
@@ -49,12 +52,7 @@ export default function AddNote() {
   return (
     <>
       <div>
-        <Button
-          onClick={() => setOpenModal(true)}
-          className="fixed bottom-20 right-8 bg-black text-white rounded-full p-4 w-12 h-12 flex items-center justify-center"
-        >
-          +
-        </Button>
+       <MdOutlineNoteAdd size={37} onClick={() => setOpenModal(true)}></MdOutlineNoteAdd>
         <Modal show={openModal} onClose={() => setOpenModal(false)}>
           <Modal.Header>Your Note Details</Modal.Header>
           <p className="text-xs text-red-600 font-semibold h-6">
@@ -100,3 +98,4 @@ export default function AddNote() {
     </>
   )
 }
+

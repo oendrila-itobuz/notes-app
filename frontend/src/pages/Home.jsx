@@ -1,15 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useForm } from "react-hook-form";
 import Header from './../components/Header'
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { Button, Modal } from "flowbite-react";
 import AddNote from '../components/AddNote';
 import { useContext } from 'react'
 import { GlobalContext } from '../context/GlobalContext';
-import { MdDelete } from "react-icons/md";
-import { GrFormView } from "react-icons/gr";
-import { GrEdit } from "react-icons/gr";
 import DeleteNote from '../components/DeleteNote';
 import EditNote from '../components/EditNote';
 import ViewNote from '../components/ViewNote';
@@ -41,6 +35,7 @@ export default function Home() {
 
   const onSubmit = (data) => {
     setSearchItem(data.title)
+    setcurrentpage(1)
   }
   const getUser = async() =>{
     try {
@@ -93,9 +88,9 @@ export default function Home() {
   }
   return (
     <>
+    <div className='min-h-screen bg-purple-200 '>
       <Header redirect={{ path: "Logout" }}></Header>
-      <div className='min-h-screen bg-purple-200'>
-        <div className='flex justify-between p-2'>
+        <div className='flex flex-col  sm:flex-row items-center justify-between p-2'>
           <div className="text-2xl font-serif p-2">Welcome,{user}</div>
           <div className='flex items-center gap-3'> 
           {(userRole==="admin")&& <GetAllUsers></GetAllUsers>}
@@ -179,14 +174,14 @@ export default function Home() {
           </div>
         </div>
         {notes.length !== 0 && (
-        <div className='flex justify-center gap-4'>
+        <div className='flex justify-center gap-4 pb-40 lg:pb-0'>
           <button disabled={currentpage == 1} onClick={() => setcurrentpage(currentpage - 1)}>Previous</button>
           <pre>{currentpage} of {totalpages}</pre>
           <button disabled={currentpage == totalpages} onClick={() => setcurrentpage(currentpage + 1)}>Next</button>
         </div>)}
         <div className="text-6xl text-center">{message}</div>
-      </div>
       <Footer></Footer>
+      </div>
     </>
   )
 }

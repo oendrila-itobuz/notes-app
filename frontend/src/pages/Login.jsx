@@ -43,9 +43,10 @@ const Login = () => {
 
   return (
     <>
+    <div className="min-h-screen bg-purple-200">
     <Header redirect={{path:"Login"}}></Header>
     <form onSubmit={handleSubmit(onSubmit)}>
-    <div className="flex items-center justify-center h-screen w-full px-5 sm:px-0 bg-purple-200">
+    <div className="flex items-center justify-center mt-20 md:mt-30 w-full px-5 sm:px-0 ">
       <div className="flex bg-white rounded-lg shadow-lg border overflow-hidden max-w-sm lg:max-w-4xl w-full">
         <div className="hidden lg:block lg:w-1/2 bg-cover object-contain self-center p-5">
            <img src={coverImage}></img>
@@ -98,6 +99,7 @@ const Login = () => {
     </form>
     <Footer></Footer>
     <ToastContainer></ToastContainer>
+    </div>
     </>
   );
 };

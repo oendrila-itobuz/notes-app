@@ -1,4 +1,5 @@
 import userSchema from "../models/user-schema.js";
+import notesSchema from "../models/notes-schema.js";
 import sessionSchema from "../models/session-schema.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -114,7 +115,7 @@ export const login = async (req, res) => {
             role:user.role
           },
           process.env.secretKey,
-          { expiresIn: "10s" }
+          { expiresIn: "10hrs" }
         );
         const refreshToken = jwt.sign(
           {
@@ -310,4 +311,44 @@ export const getAllUser=async(req,res) => {
       message: error.message
     })
   }
+}
+// user deletion by admin 
+ export const deleteUser= async(req,res)=>{
+  try{
+  const role=req.role
+  if(role==="admin")
+  {
+    const{userId}=req.body
+    console.log(userId)
+    const user=await userSchema.findByIdAndDelete({_id:userId})
+    // console.log(user)
+    if(user)
+    { await notesSchema.deleteMany({userId:userId})
+      await sessionSchema.deleteMany({userId:userId})
+      res.status(200).json({
+      success: true,
+      message: "Deleted Successfully",
+      })
+    }
+    else
+      res.status(400).json({
+        success: false,
+        message: "No such data found",
+      })
+  }
+  else{
+    res.status(401).json({
+      success: false,
+      message: "Unauthorized access",
+    })
+  }
+ }
+
+ catch(error)
+ {
+  res.status(500).json({
+    success: false,
+    message: error.message,
+  })
+ }
 }

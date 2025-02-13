@@ -16,7 +16,6 @@ const userSchema = yup.object({
     .min(5, "userName must be at least 5 characters")
     .max(20, "userName must be at most 20 characters"),
   email: yup.string().email("The email is not a valid one").required(),
-  role:yup.string().required(),
   password: yup
     .string()
     .min(8, "Password must be at least 8 characters")
@@ -58,9 +57,10 @@ const Register = () => {
 
   return (
     <>
+     <div className="min-h-screen bg-purple-200">
     <Header redirect={{path:"Login"}}></Header>
     <form onSubmit={handleSubmit(onSubmit, onError)}>
-      <div className="flex items-center justify-center h-screen w-full px-5 sm:px-0 bg-purple-300">
+      <div className="flex items-center justify-center w-full mt-20 md:mt-30 px-5 sm:px-0">
         <div className="flex bg-white rounded-lg shadow-lg border overflow-hidden max-w-sm lg:max-w-4xl w-full">
           <div className="hidden lg:block lg:w-1/2 bg-cover object-contain self-center p-5">
             <img src={coverImage}></img>
@@ -95,17 +95,6 @@ const Register = () => {
               <p className="text-xs text-red-600 font-semibold h-6">
                 {formState.errors.email?.message}
               </p>
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-               Role
-              </label>
-              <select name="role" id="role" className="border border-gray-300 rounded py-2 px-4 block w-full focus:outline-2 focus:outline-blue-700" {...register("role")}>
-              <option value="">--! Select Your Role !--</option>
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
-              </select>
-              <p className="text-xs text-red-600 font-semibold h-6">
-                {formState.errors.role?.message}
-              </p>
               <label className="text-gray-700 text-sm font-bold mb-2">
                 Password
               </label>
@@ -133,6 +122,7 @@ const Register = () => {
     </form>
     <Footer></Footer>
     <ToastContainer></ToastContainer>
+    </div>
     </>
   );
 };

@@ -19,8 +19,7 @@ export default function ViewNote() {
               <p className="text-gray-700">{Selectednote.description}</p>
               <img src={Selectednote.file}></img>
               <p className="text-xs text-gray-500 mt-4">Last updated: {new Date(Selectednote.updatedAt).toLocaleDateString()}</p>
-            </div>
-          
+            </div>        
         </Modal.Body>
         <Modal.Footer>
           <Button color="gray" onClick={() => setOpenModal(false)}>Close</Button>

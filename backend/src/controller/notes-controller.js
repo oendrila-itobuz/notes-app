@@ -3,7 +3,28 @@ import userSchema from "../models/user-schema.js";
 // add note
 export const addNote = async (req, res) => {
   try {
-    const { title, description } = req.body;
+    if (req.role==="admin" && Object.keys(req.body).length===3)
+    { 
+    const { title, description,userId } = req.body;
+    const existing = await noteSchema.findOne({ title: title.trim(), userId: userId })
+    if (existing) {
+      return res.status(400).json({
+        success: false,
+        message: "This title Already Exists",
+      });
+    }
+    const user =await userSchema.findById({_id:userId})
+    const data = await noteSchema.create({ title: title, description: description, userId: req.userId,author:user.userName});
+    if (data) {
+      return res.status(200).json({
+        success: true,
+        message: "Note Created Success",
+        data: [data]
+      });
+    }
+    }
+    else{
+      const{title,description}=req.body
     const existing = await noteSchema.findOne({ title: title.trim(), userId: req.userId })
     if (existing) {
       return res.status(400).json({
@@ -20,6 +41,8 @@ export const addNote = async (req, res) => {
         data: [data]
       });
     }
+
+  }
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -238,9 +261,9 @@ export const attachFile = async (req, res) => {
       return res.status(400).send('No file uploaded.');
     }
     const noteId = req.params.id
-    const data = await noteSchema.findOne({ userId: req.userId, _id: noteId })
+    const data = await noteSchema.findOne({ _id: noteId })
     data.file = "http://localhost:8000/uploads/" + req.file.filename
-
+    console.log(data.file)
     await data.save()
     res.status(200).json({
       success: true,
@@ -250,7 +273,7 @@ export const attachFile = async (req, res) => {
   }
   catch (error) {
     res.status(500).json({
-      message: error
+      message: error.message
     })
   }
 }
@@ -293,10 +316,10 @@ export const allChecks = async(req,res)=>
   const limit=4
   const { title,page,order } = req.body
   const offset = (page - 1) * limit;
-  try{
   const total =await noteSchema.countDocuments({})
-  const user = await userSchema.findById({ _id: req.userId }) 
   const totalpages=Math.ceil(total/limit)
+  try{
+  const user = await userSchema.findById({ _id: req.userId }) 
   if(req.role==="admin")
     {
       const notes = await noteSchema.find({author:{"$regex":title,$options:'i'}}).sort({ updatedAt: order, title: order }).skip(offset).limit(limit)
@@ -309,11 +332,13 @@ export const allChecks = async(req,res)=>
     }
     else{
       const notes = await noteSchema.find({ userId: req.userId , title:{"$regex":title,$options:'i'}}).sort({ updatedAt: order, title: order }).skip(offset).limit(limit)
+      const length=await noteSchema.countDocuments({userId:req.userId})
+      const pages=Math.ceil(length/limit)
   return res.status(200).json({
     success: true,
     message: notes,
     user:user.userName,
-    totalpages:totalpages
+    totalpages:pages
   })}
 }
 catch (error) {
