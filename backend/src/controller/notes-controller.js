@@ -15,7 +15,7 @@ export const addNote = async (req, res) => {
         });
       }
       const user = await userSchema.findById({ _id: userId })
-      const data = await noteSchema.create({ title: title, description: description, userId: req.userId, author: user.userName });
+      const data = await noteSchema.create({ title: title, description: description, userId: userId, author: user.userName });
       if (data) {
         return res.status(statusCodes.CREATED).json({
           success: true,
@@ -42,7 +42,6 @@ export const addNote = async (req, res) => {
           data: [data]
         });
       }
-
     }
   } catch (error) {
     return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
@@ -310,13 +309,13 @@ export const allChecks = async (req, res) => {
   const limit = 4
   const { title, page, order } = req.body
   const offset = (page - 1) * limit;
-  const total = await noteSchema.countDocuments({})
-  const totalpages = Math.ceil(total / limit)
   try {
     const user = await userSchema.findById({ _id: req.userId })
     if (req.role === "admin")  // for admin
     {
       const notes = await noteSchema.find({ author: { "$regex": title, $options: 'i' } }).sort({ updatedAt: order, title: order }).skip(offset).limit(limit)
+      const count = await noteSchema.countDocuments({ author: { "$regex": title, $options: 'i' } })
+      const totalpages = Math.ceil(count / limit)
       return res.status(statusCodes.OK).json({
         success: true,
         message: notes,
@@ -326,7 +325,7 @@ export const allChecks = async (req, res) => {
     }
     else {    // for user
       const notes = await noteSchema.find({ userId: req.userId, title: { "$regex": title, $options: 'i' } }).sort({ updatedAt: order, title: order }).skip(offset).limit(limit)
-      const length = await noteSchema.countDocuments({ userId: req.userId })
+      const length = await noteSchema.countDocuments({ userId: req.userId, title: { "$regex": title, $options: 'i' } })
       const pages = Math.ceil(length / limit)
       return res.status(statusCodes.OK).json({
         success: true,

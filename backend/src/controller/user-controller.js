@@ -113,7 +113,7 @@ export const login = async (req, res) => {
             role: user.role
           },
           process.env.secretKey,
-          { expiresIn: "10hrs" }
+          { expiresIn: "10hr" }
         );
         const refreshToken = jwt.sign(
           {
