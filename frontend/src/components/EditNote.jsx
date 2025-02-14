@@ -18,10 +18,8 @@ export const noteSchema = yup.object({
 
 export default function EditNote() {
   const [openModal, setOpenModal] = useState(false);
-  const { notes, setNotes, noteId } = useContext(GlobalContext);
+  const { notes, setNotes, noteId,setTriggeredEvent,Selectednote } = useContext(GlobalContext);
   const [backendErrorMessage, setBackendErrorMessage] = useState("");
-  const { triggeredEvent, setTriggeredEvent } = useContext(GlobalContext)
-  const { Selectednote, setSelectedNote } = useContext(GlobalContext)
 
   const { register, handleSubmit, formState: { errors }, setValue } = useForm({
     resolver: yupResolver(noteSchema),
@@ -61,7 +59,7 @@ export default function EditNote() {
 
   return (
     <>
-      <GrEdit size={35} onClick={openEditModal} />
+      <GrEdit size={30} className='cursor-pointer' onClick={openEditModal} />
       <Modal show={openModal} onClose={() => setOpenModal(false)}>
         <Modal.Header>Edit Your Note</Modal.Header>
         <p className="text-xs text-red-600 font-semibold h-6">{backendErrorMessage}</p>

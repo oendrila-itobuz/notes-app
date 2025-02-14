@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Modal } from "flowbite-react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
 import { useContext } from 'react'
 import { GlobalContext } from '../../context/GlobalContext';
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -9,7 +8,7 @@ import * as yup from "yup";
 import { notesInstance } from '../../../middleware/AxiosInterceptor';
 import { MdOutlineNoteAdd } from "react-icons/md";
 
-export const noteSchema = yup.object({
+const noteSchema = yup.object({
 
   title: yup.string().trim()
     .min(5, 'Title must be at least 8 characters')
@@ -19,7 +18,7 @@ export const noteSchema = yup.object({
 });
 
 export default function AddNote(userId) {
-  const { register, handleSubmit, formState } = useForm({ resolver: yupResolver(noteSchema) });
+  const { register, handleSubmit, formState,reset } = useForm({ resolver: yupResolver(noteSchema) });
   const [openModal, setOpenModal] = useState(false);
   const { notes, setNotes } = useContext(GlobalContext)
   const [backendErrorMessage, setBackendErrorMessage] = useState("");
@@ -28,7 +27,6 @@ export default function AddNote(userId) {
   const addNote = async (data,e) => {
     try {
       data.userId=userId.userId
-      console.log(data)
       const res = await notesInstance.post(
         "http://localhost:8000/note/addNote",
         data
@@ -37,14 +35,14 @@ export default function AddNote(userId) {
         setNotes([...notes, res.data.data[0]]);
         setTriggeredEvent(true)
         setOpenModal(false);
-        e.target.reset()
+        reset()
       }
       else {
         setBackendErrorMessage(res.data.message);
         console.log(error)
       }
     } catch (error) {
-      setBackendErrorMessage(error.response.data.message);
+      setBackendErrorMessage(error?.response?.data?.message);
       console.log(backendErrorMessage)
     }
   };
@@ -55,7 +53,7 @@ export default function AddNote(userId) {
        <MdOutlineNoteAdd size={37} onClick={() => setOpenModal(true)}></MdOutlineNoteAdd>
         <Modal show={openModal} onClose={() => setOpenModal(false)}>
           <Modal.Header>Your Note Details</Modal.Header>
-          <p className="text-xs text-red-600 font-semibold h-6">
+          <p className="text-xs text-red-600 font-semibold h-6 text-center m-4">
             {backendErrorMessage}
           </p>
           <Modal.Body>

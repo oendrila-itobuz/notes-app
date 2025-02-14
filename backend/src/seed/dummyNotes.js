@@ -1,8 +1,6 @@
 import { faker } from '@faker-js/faker'
 import userSchema from '../models/user-schema.js';
 import noteSchema from '../models/notes-schema.js';
-import bcrypt from 'bcrypt'
-import mongoose from 'mongoose';
 
 const dummyNotes = async (num) => {
   const notes = [];

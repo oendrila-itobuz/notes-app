@@ -32,7 +32,7 @@ userInstance.interceptors.response.use(
 
     const originalRequest = error.config;
 
-    if (error.response && error.response.status === 403 && !originalRequest._retry) {
+    if (error.response && error.response.status === 400 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
@@ -59,7 +59,6 @@ userInstance.interceptors.response.use(
 notesInstance.interceptors.request.use(
   function (config) {
     const token = localStorage.getItem('accessToken');
-    console.log("accesstoken", token)
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
@@ -77,11 +76,8 @@ notesInstance.interceptors.response.use(
   async function (error) {
 
     const originalRequest = error.config;
-    console.log("error", error)
-    if (error.response && error.response.status === 403 && !originalRequest._retry) {
-      console.log("oooo")
+    if (error.response && error.response.status === 400 && !originalRequest._retry) {
       originalRequest._retry = true;
-      console.log(r_token)
       try {
         const response = await axios.get('http://localhost:8000/user/regenerateToken', {
           headers: {

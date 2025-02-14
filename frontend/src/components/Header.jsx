@@ -1,9 +1,6 @@
 import React from 'react'
-import axios from "axios";
 import { Link, useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { GlobalContext } from '../context/GlobalContext';
+import toast, { Toaster } from 'react-hot-toast';
 import logo from '../assets/images/logo.svg'
 import { userInstance } from '../../middleware/AxiosInterceptor';
 
@@ -19,8 +16,9 @@ export default function Header({ redirect }) { //(taking login and logout as pro
         if (res.status) {
           localStorage.removeItem("accessToken");
           localStorage.removeItem("refreshToken");
-          toast.success("Logged out successfully!");
           localStorage.removeItem("loginStatus")
+          localStorage.removeItem("userRole")
+          toast.success("Logged out successfully!");
           navigate("/login");
         }
       }
@@ -40,7 +38,7 @@ export default function Header({ redirect }) { //(taking login and logout as pro
         <Link to="/login" onClick={handlechange} className="self-center text-xl font-serif px-3 py-1 border border-gray-700 rounded-md transition-all hover:border-[#8B0000] hover:text-[#8B0000]">{redirect.path} &rarr;</Link>
       </nav>
       <hr className="border-gray-200 sm:mx-auto" />
-      <ToastContainer />
+      <Toaster />
     </>
   )
 }

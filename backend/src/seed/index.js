@@ -1,4 +1,3 @@
-import express from 'express'
 import { connectDB } from '../config/db-connection.js';
 import noteSchema from "../models/notes-schema.js";
 import userSchema from "../models/user-schema.js";

@@ -5,11 +5,11 @@ import { GrFormView } from "react-icons/gr";
 
 export default function ViewNote() {
   const [openModal, setOpenModal] = useState(false);
-  const { Selectednote, setSelectedNote } = useContext(GlobalContext)
+  const { Selectednote} = useContext(GlobalContext)
 
   return (
     <>
-      <GrFormView size={35} onClick={()=>{setOpenModal(true)}} />
+      <GrFormView size={35} className='cursor-pointer' onClick={()=>{setOpenModal(true)}} />
       
       <Modal show={openModal} onClose={() => setOpenModal(false)}>
         <Modal.Header>View Note</Modal.Header>

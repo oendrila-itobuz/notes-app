@@ -3,18 +3,13 @@ import { Button, Modal } from "flowbite-react";
 import { useState } from "react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { MdDelete } from "react-icons/md";
-import { useParams } from 'react-router-dom'
 import { useContext } from 'react'
 import { GlobalContext } from '../context/GlobalContext';
-import axios from "axios";
-import Home from '../pages/Home';
 import { notesInstance } from '../../middleware/AxiosInterceptor';
 
 export default function DeleteNote() {
   const [openModal, setOpenModal] = useState(false);
-  const { noteId, setNoteId } = useContext(GlobalContext)
-  const { notes, setNotes } = useContext(GlobalContext)
-  const { triggeredEvent, setTriggeredEvent } = useContext(GlobalContext)
+  const { noteId, setNoteId , notes ,setNotes,setTriggeredEvent } = useContext(GlobalContext)
 
   const deleteNote = async () => {
     try {
@@ -36,7 +31,7 @@ export default function DeleteNote() {
   }
   return (
     <>
-      <MdDelete size={35} onClick={() => setOpenModal(true)}></MdDelete>
+      <MdDelete size={35} className='cursor-pointer' onClick={() => setOpenModal(true)}></MdDelete>
       <Modal show={openModal} size="md" onClose={() => setOpenModal(false)} popup>
         <Modal.Header />
         <Modal.Body>

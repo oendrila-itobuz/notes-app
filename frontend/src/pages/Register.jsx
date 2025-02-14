@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import Header from "../components/Header.jsx";
 import Footer from "../components/Footer.jsx";
 import coverImage from '../assets/images/coverImage.jpg'
+import { FaEye } from "react-icons/fa";
+import { FaEyeSlash } from "react-icons/fa";
 
 const userSchema = yup.object({
   userName: yup
@@ -26,10 +28,10 @@ const userSchema = yup.object({
 });
 
 const Register = () => {
-  const navigate = useNavigate();
-  const { register, handleSubmit,formState } = useForm({
+  const { register, handleSubmit, formState, reset } = useForm({
     resolver: yupResolver(userSchema),
   });
+  const [toggle, settoggle] = useState(false);
   const onError = (errors, e) => console.log(errors, e);
   const onSubmit = async (data, e) => {
     try {
@@ -45,84 +47,99 @@ const Register = () => {
     } catch (error) {
       toast.error(error.response?.data?.message || "An unexpected error occurred.");
     }
+    reset()
   };
-  const handleResendMail = ()=>{
-    navigate('/resendMail')
-  }
-  const options = [
-    {value:'null' ,label:'Select the type of role'},
-    { value: 'admin', label: 'Admin' },
-    { value: 'user', label: 'User' },
-];
 
   return (
     <>
-     <div className="min-h-screen bg-purple-200">
-    <Header redirect={{path:"Login"}}></Header>
-    <form onSubmit={handleSubmit(onSubmit, onError)}>
-      <div className="flex items-center justify-center w-full mt-20 md:mt-30 px-5 sm:px-0">
-        <div className="flex bg-white rounded-lg shadow-lg border overflow-hidden max-w-sm lg:max-w-4xl w-full">
-          <div className="hidden lg:block lg:w-1/2 bg-cover object-contain self-center p-5">
-            <img src={coverImage}></img>
-          </div>
-          <div className="w-full p-8 lg:w-1/2 bg-sky-100">
-            <p className="text-xl text-gray-600 text-center">
-              Welcome To Our Notes App!
-            </p>
-            <div className="mt-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                User Name
-              </label>
-              <input
-                className="text-gray-700 border border-gray-300 rounded py-2 px-4 block w-full focus:outline-2 focus:outline-blue-700"
-                type="text"
-                {...register("userName")}
-                required
-              />
-              <p className="text-xs text-red-600 font-semibold h-6">
-                {formState.errors.userName?.message}
-              </p>
+      <div className="min-h-screen bg-purple-200">
+        <Header redirect={{ path: "Login" }}></Header>
+        <form onSubmit={handleSubmit(onSubmit, onError)}>
+          <div className="flex items-center justify-center w-full mt-20 md:mt-30 px-5 sm:px-0">
+            <div className="flex bg-white rounded-lg shadow-lg border overflow-hidden max-w-sm lg:max-w-4xl w-full">
+              <div className="hidden lg:block lg:w-1/2 bg-cover object-contain self-center p-5">
+                <img src={coverImage}></img>
+              </div>
+              <div className="w-full p-8 lg:w-1/2 bg-sky-100">
+                <p className="text-xl text-gray-600 text-center">
+                  Welcome To Our Notes App!
+                </p>
+                <div className="mt-4">
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    User Name
+                  </label>
+                  <input
+                    className="text-gray-700 border border-gray-300 rounded py-2 px-4 block w-full"
+                    type="text"
+                    {...register("userName")}
+                    required
+                  />
+                  <p className="text-xs text-red-600 font-semibold h-6">
+                    {formState.errors.userName?.message}
+                  </p>
 
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Email Address
-              </label>
-              <input
-                className="text-gray-700 border border-gray-300 rounded py-2 px-4 block w-full focus:outline-2 focus:outline-blue-700"
-                type="email"
-                {...register("email")}
-                required
-              />
-              <p className="text-xs text-red-600 font-semibold h-6">
-                {formState.errors.email?.message}
-              </p>
-              <label className="text-gray-700 text-sm font-bold mb-2">
-                Password
-              </label>
-              <input
-                className="text-gray-700 border border-gray-300 rounded py-2 px-4 block w-full focus:outline-2 focus:outline-blue-700 mt-2"
-                type="password"
-                {...register("password")}
-                required
-              />
-              <p className="text-xs text-red-600 font-semibold h-6">
-                {formState.errors.password?.message}
-              </p>
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Email Address
+                  </label>
+                  <input
+                    className="text-gray-700 border border-gray-300 rounded py-2 px-4 block w-full"
+                    type="email"
+                    {...register("email")}
+                    required
+                  />
+                  <p className="text-xs text-red-600 font-semibold h-6">
+                    {formState.errors.email?.message}
+                  </p>
+                  <label className="text-gray-700 text-sm font-bold mb-2">
+                    Password
+                  </label>
+                  {!toggle && (
+                    <div className="relative">
+                      <input
+                        className="text-gray-700 border border-gray-300 rounded py-2 px-4 block w-full focus:outline-none mt-2"
+                        type="password"
+                        {...register("password")}
+                        required
+                      />
+                      <FaEyeSlash
+                        className="absolute inset-y-3 right-2"
+                        onClick={() => settoggle(true)}
+                      />
+                    </div>
+                  )}
+                  {toggle && (
+                    <div className="relative">
+                      <input
+                        className="text-gray-700 border border-gray-300 rounded py-2 px-4 block w-full focus:outline-none mt-2"
+                        type="text"
+                        {...register("password")}
+                        required
+                      />
+                      <FaEye
+                        className="absolute inset-y-3 right-2"
+                        onClick={() => settoggle(false)}
+                      />
+                    </div>
+                  )}
+                  <p className="text-xs text-red-600 font-semibold h-6">
+                    {formState.errors.password?.message}
+                  </p>
+                </div>
+                <div className="mt-4">
+                  <button className="bg-blue-700 text-white font-bold py-2 px-4 w-full rounded hover:bg-blue-600">
+                    Register
+                  </button>
+                </div>
+                <div className="mt-3 text-center">
+                  <Link to={'/resendMail'} className="text-gray-700 self-center text-xs sm:text-xl font-serif px-3 py-1 border border-gray-700 rounded-md transition-all hover:border-[#8B0000] hover:text-[#8B0000]">Resend Verification link </Link>
+                </div>
+              </div>
             </div>
-            <div className="mt-4">
-              <button className="bg-blue-700 text-white font-bold py-2 px-4 w-full rounded hover:bg-blue-600">
-                Register
-              </button>
-            </div>
-            <div className="mt-3 text-center">
-            <a className="text-gray-700 self-center text-xl font-serif px-3 py-1 border border-gray-700 rounded-md transition-all hover:border-[#8B0000] hover:text-[#8B0000]" onClick={handleResendMail} >Resend Verification link </a>
           </div>
-          </div>
-        </div>
+        </form>
+        <Footer></Footer>
+        <ToastContainer></ToastContainer>
       </div>
-    </form>
-    <Footer></Footer>
-    <ToastContainer></ToastContainer>
-    </div>
     </>
   );
 };

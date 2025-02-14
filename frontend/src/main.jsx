@@ -7,7 +7,7 @@ import { GlobalProvider } from './context/GlobalContext.jsx'
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <GlobalProvider>
-    <App />
+      <App />
     </GlobalProvider>
   </StrictMode>,
 )

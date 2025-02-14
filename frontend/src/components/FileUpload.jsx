@@ -2,14 +2,11 @@ import React, { useState, useContext } from "react";
 import { MdFileUpload } from "react-icons/md";
 import { Modal } from "flowbite-react";
 import { GlobalContext } from "../context/GlobalContext";
-import axios from "axios";
 import { notesInstance } from "../../middleware/AxiosInterceptor";
 
 export default function FileUpload() {
   const [openModal, setOpenModal] = useState(false);
-  const [filepresent, setfilepresent] = useState(false);
-  const { Selectednote, setSelectedNote } = useContext(GlobalContext);
-  const { triggeredEvent, setTriggeredEvent } = useContext(GlobalContext);
+  const { Selectednote, setSelectedNote ,setTriggeredEvent } = useContext(GlobalContext);
 
   const onFileChange = async (event) => {
     try {
@@ -27,7 +24,6 @@ export default function FileUpload() {
 
       if (res.data.success) {
         setTriggeredEvent(true);
-        setfilepresent(true);
         setSelectedNote(res.data.data)
       }
     } catch (error) {
@@ -38,7 +34,7 @@ export default function FileUpload() {
 
   return (
     <>
-      <MdFileUpload size={35} onClick={() => setOpenModal(true)} />
+      <MdFileUpload size={35} className='cursor-pointer' onClick={() => setOpenModal(true)} />
       <Modal show={openModal} onClose={() => setOpenModal(false)}>
         <Modal.Header>Upload Your File</Modal.Header>
         <Modal.Body>

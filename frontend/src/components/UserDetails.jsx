@@ -1,12 +1,10 @@
 import React, { useState, useContext,useEffect } from 'react';
-import axios from 'axios';
 import { Modal, Button } from "flowbite-react";
 import { GlobalContext } from '../context/GlobalContext';
 import { FaUser } from "react-icons/fa6";
 import { userInstance } from '../../middleware/AxiosInterceptor';
 
 export default function UserDetails() {
-  const accessToken = localStorage.getItem("accessToken");
   const [openModal, setOpenModal] = useState(false);
   const { user } = useContext(GlobalContext);
   const [profilePic, setProfilePic] = useState("");
@@ -15,7 +13,6 @@ export default function UserDetails() {
     try {
       const res = await userInstance.get('http://localhost:8000/user/getUser',{
   });
-      console.log(res)
       if(res.data.success)
       {
           setProfilePic(res.data.data.file)
@@ -48,7 +45,7 @@ export default function UserDetails() {
 
   return (
     <>
-      <FaUser size={35} onClick={() => setOpenModal(true)} />      
+      <FaUser size={35} className='cursor-pointer' onClick={() => setOpenModal(true)} />      
       <Modal show={openModal} onClose={() => setOpenModal(false)}>
         <Modal.Header>User Details</Modal.Header>
         <Modal.Body>

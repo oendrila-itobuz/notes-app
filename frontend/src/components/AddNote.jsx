@@ -1,15 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, {useState} from 'react'
 import { Button, Modal } from "flowbite-react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
 import { useContext } from 'react'
 import { GlobalContext } from '../context/GlobalContext';
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { notesInstance } from '../../middleware/AxiosInterceptor';
 
-export const noteSchema = yup.object({
-
+ const noteSchema = yup.object({
   title: yup.string().trim()
     .min(5, 'Title must be at least 8 characters')
     .max(20, 'Title must be at most 20 characters'),
@@ -18,13 +16,13 @@ export const noteSchema = yup.object({
 });
 
 export default function AddNote() {
-  const { register, handleSubmit, formState } = useForm({ resolver: yupResolver(noteSchema) });
+  const { register, handleSubmit, formState,reset } = useForm({ resolver: yupResolver(noteSchema) });
   const [openModal, setOpenModal] = useState(false);
   const { notes, setNotes } = useContext(GlobalContext)
   const [backendErrorMessage, setBackendErrorMessage] = useState("");
-  const { triggeredEvent, setTriggeredEvent } = useContext(GlobalContext)
+  const { setTriggeredEvent } = useContext(GlobalContext)
 
-  const addNote = async (data,e) => {
+  const addNote = async (data) => {
     try {
       const res = await notesInstance.post(
         "http://localhost:8000/note/addNote",
@@ -34,7 +32,7 @@ export default function AddNote() {
         setNotes([...notes, res.data.data[0]]);
         setTriggeredEvent(true)
         setOpenModal(false);
-        e.target.reset
+        reset()
       }
       else {
         setBackendErrorMessage(res.data.message);
@@ -57,7 +55,7 @@ export default function AddNote() {
         </Button>
         <Modal show={openModal} onClose={() => setOpenModal(false)}>
           <Modal.Header>Your Note Details</Modal.Header>
-          <p className="text-xs text-red-600 font-semibold h-6">
+          <p className="text-xs text-red-600 font-semibold h-6 text-center m-2">
             {backendErrorMessage}
           </p>
           <Modal.Body>

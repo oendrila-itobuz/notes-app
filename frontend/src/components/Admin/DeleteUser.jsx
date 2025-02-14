@@ -9,16 +9,13 @@ import { GlobalContext } from '../../context/GlobalContext';
 
 export default function DeleteNote(userId) {
   const [openModal, setOpenModal] = useState(false);
-  const { triggeredEvent ,setTriggeredEvent} = useContext(GlobalContext)
+  const {setTriggeredEvent} = useContext(GlobalContext)
  const deleteUser=async()=>{
-  console.log("hello")
-  console.log(userId)
   setOpenModal(false)
   try{
    const res= await userInstance.post('http://localhost:8000/user/deleteUser',userId)
    if(res.data.success)
    {
-    console.log("clicked")
     setTriggeredEvent(true)
    }
   }

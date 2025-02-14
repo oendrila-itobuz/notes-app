@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { useParams,useNavigate } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import axios from "axios";
 
 const Verify = () => {
@@ -22,14 +22,14 @@ const Verify = () => {
       console.log(err)
     }
   };
-    useEffect(() => {
-      Verification()
-    }, []) 
+  useEffect(() => {
+    Verification()
+  }, [])
 
   return (
     <div className="flex items-center justify-center h-screen bg-pink-100">
       <div className="bg-white p-6 rounded shadow-md text-center">
-      {message}   
+        {message}
       </div>
     </div>
   );
