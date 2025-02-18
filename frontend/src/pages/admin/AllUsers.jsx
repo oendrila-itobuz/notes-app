@@ -22,7 +22,6 @@ export default function AllUsers() {
       }
     } catch (err) {
       console.error("Error fetching users:", err);
-      setError("Failed to fetch users");
     }
   };
 
@@ -50,7 +49,7 @@ export default function AllUsers() {
                     <div className='flex gap-2'>
                       <AddNote userId={user._id}></AddNote>
                       <DeleteUser userId={user._id}></DeleteUser>
-                      <Chat></Chat>
+                      <Chat user={user}></Chat>
                     </div>
                   </div>
                 ))}
