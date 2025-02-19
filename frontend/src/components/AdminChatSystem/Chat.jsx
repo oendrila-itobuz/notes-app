@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { IoChatbubbleEllipsesOutline, IoSend } from "react-icons/io5";
 import { userInstance } from "../../../middleware/AxiosInterceptor";
 import axios from "axios";
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:8000"); // Change this to your server URL
 
 export default function Chat({ user }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -9,7 +12,19 @@ export default function Chat({ user }) {
   const [messages, setMessages] = useState([]);
   const [messageInput, setMessageInput] = useState("");
 
- 
+  useEffect(() => {
+    getUser();
+
+    // Listen for incoming messages from the server
+    socket.on("receiveMessage", (newMessage) => {
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+    });
+
+    return () => {
+      socket.off("receiveMessage");
+    };
+  }, []);
+
   const getUser = async () => {
     try {
       const res = await userInstance.get("http://localhost:8000/user/getUser");
@@ -21,11 +36,6 @@ export default function Chat({ user }) {
     }
   };
 
-  useEffect(() => {
-    getUser();
-  }, []);
-
- 
   const toggleModal = async () => {
     setIsModalOpen(!isModalOpen);
     if (!isModalOpen) {
@@ -56,7 +66,8 @@ export default function Chat({ user }) {
       const res = await axios.post("http://localhost:8000/chat/sendChat", newMessage);
       if (res.data.success) {
         setMessages([...messages, { userId_Sender: adminId, message: messageInput }]);
-        setMessageInput(""); 
+        socket.emit("sendMessage", newMessage); // Emit message via WebSocket
+        setMessageInput("");
       }
     } catch (error) {
       console.error("Error sending message:", error.message);
@@ -85,7 +96,7 @@ export default function Chat({ user }) {
                 <div
                   key={index}
                   className={`p-2 rounded-lg max-w-[70%] ${
-                    msg.userId_Sender !== user._id ? "bg-green-100 self-end text-right" : "bg-blue-100 self-start text-left"
+                    msg.userId_Sender !== user._id ? "bg-green-100 self-end ml-auto text-right" : "bg-blue-100 self-start text-left"
                   }`}
                 >
                   {msg.message}
