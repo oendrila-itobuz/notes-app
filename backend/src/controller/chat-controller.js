@@ -35,10 +35,9 @@ export const getChat=async(req,res)=>{
     { userId_Sender: receiverId, userId_Receiver: senderId }
   ]})
 if (user) {
-    const x=user.map((user)=>user.message)
     return res.status(statusCodes.OK).json({
       success: true,
-      data: x,
+      data: user,
       message: "Chats Fetched Successfully",
     })
   }
