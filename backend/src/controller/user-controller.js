@@ -308,7 +308,33 @@ export const getAllUser = async (req, res) => {
     })
   }
 }
-
+//get all admin(user)
+export const getAllAdmin = async (req, res) => {
+  try {
+    const user = await userSchema.findById({ _id: req.userId })
+    const users = await userSchema.find({ role: "admin" })
+    if (!user) {
+      {
+        return res.status(statusCodes.NOT_FOUND).json({
+          success: false,
+          error: 'Admin does not exist',
+        });
+      }
+    }
+   else {
+      res.status(statusCodes.OK).json({
+        success: true,
+        message: "Admins Retrieved",
+        data: users
+      })
+    }
+  }
+  catch (error) {
+    res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+      message: error.message
+    })
+  }
+}
 // user deletion by admin 
 export const deleteUser = async (req, res) => {
   try {

@@ -35,6 +35,7 @@ export const getChat=async(req,res)=>{
     { userId_Sender: receiverId, userId_Receiver: senderId }
   ]})
 if (user) {
+   
     return res.status(statusCodes.OK).json({
       success: true,
       data: user,
